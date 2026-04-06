@@ -11,7 +11,7 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
             <span className="text-accent">SWMS</span> Generator
           </Link>
           <Link
-            href="/details"
+            href="/job"
             className="bg-accent text-primary font-bold px-5 py-2 rounded-xl hover:bg-accent-dark transition-colors text-sm"
           >
             Create SWMS
@@ -28,7 +28,7 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
           <h1 className="text-3xl sm:text-4xl font-bold">{page.h1}</h1>
           <p className="text-lg text-white/70">{page.intro}</p>
           <Link
-            href="/details"
+            href="/job"
             className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg mt-4"
           >
             {page.cta} — $7.99
@@ -130,7 +130,7 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
             60 seconds. No signup. {page.stateName} legislation included.
           </p>
           <Link
-            href="/details"
+            href="/job"
             className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg"
           >
             {page.cta} — $7.99
@@ -141,13 +141,13 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
       {/* Footer */}
       <footer className="bg-primary text-white/60 py-8 px-4 mt-auto">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <span>&copy; {new Date().getFullYear()} SWMS Generator.</span>
+          <span>&copy; {new Date().getFullYear()} Instant SWMS.</span>
           <div className="flex gap-6">
             <Link href="/" className="hover:text-white transition-colors">
               Home
             </Link>
             <Link
-              href="/details"
+              href="/job"
               className="hover:text-white transition-colors"
             >
               Create SWMS

@@ -56,11 +56,31 @@ const procedureStepSchema = z.object({
   responsible: z.string().min(1, "Responsible person/role required"),
 });
 
+const plantEquipmentSchema = z.object({
+  item: z.string().min(2, "Equipment item name required"),
+  pre_use_checks: z.string().min(5, "Pre-use checks required"),
+});
+
+const emergencyContactSchema = z.object({
+  role: z.string().min(1, "Contact role required"),
+  contact: z.string().min(1, "Contact number/method required"),
+});
+
 export const swmsResponseSchema = z.object({
+  document_purpose: z.string().min(20, "Document purpose too brief"),
   scope_of_work: z.string().min(20, "Scope of work too brief"),
   hrcw_activities: z
     .array(z.string())
     .min(1, "At least one HRCW activity must be identified"),
+  environmental_conditions: z
+    .array(z.string())
+    .min(1, "At least one environmental condition expected"),
+  training_competency: z
+    .array(z.string())
+    .min(1, "At least one training/competency requirement expected"),
+  plant_equipment: z
+    .array(plantEquipmentSchema)
+    .min(1, "At least one plant/equipment item expected"),
   steps: z
     .array(procedureStepSchema)
     .min(3, "SWMS must have at least 3 procedure steps")
@@ -71,6 +91,15 @@ export const swmsResponseSchema = z.object({
   emergency_procedures: z
     .array(z.string())
     .min(1, "At least one emergency procedure required"),
+  emergency_contacts: z
+    .array(emergencyContactSchema)
+    .min(1, "At least one emergency contact required"),
+  permit_requirements: z
+    .array(z.string())
+    .min(1, "Permit requirements section required"),
+  communication_consultation: z
+    .array(z.string())
+    .min(1, "Communication/consultation section required"),
   legislation_references: z
     .array(z.string())
     .min(1, "At least one legislative reference required"),

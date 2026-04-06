@@ -12,6 +12,10 @@
       "maxDuration": 15,
       "memory": 1024
     },
+    "src/app/api/sign/download/route.ts": {
+      "maxDuration": 15,
+      "memory": 1024
+    },
     "src/app/api/webhooks/stripe/route.ts": {
       "maxDuration": 10
     }

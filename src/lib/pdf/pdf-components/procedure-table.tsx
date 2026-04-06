@@ -23,13 +23,13 @@ const COL = {
 function getRiskColor(rating: string): { bg: string; text: string } {
   switch (rating) {
     case "Low":
-      return { bg: COLORS.greenLight, text: COLORS.green };
+      return { bg: COLORS.riskLowBg, text: COLORS.riskLow };
     case "Medium":
-      return { bg: COLORS.yellowLight, text: COLORS.yellow };
+      return { bg: COLORS.riskModerateBg, text: "#B8860B" };
     case "High":
-      return { bg: COLORS.orangeLight, text: COLORS.orange };
+      return { bg: COLORS.riskHighBg, text: COLORS.riskHigh };
     case "Very High":
-      return { bg: COLORS.redLight, text: COLORS.red };
+      return { bg: COLORS.riskExtremeBg, text: COLORS.riskExtreme };
     case "Extreme":
       return { bg: "#450a0a", text: COLORS.white };
     default:

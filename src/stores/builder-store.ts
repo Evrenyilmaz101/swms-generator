@@ -63,7 +63,7 @@ const DEFAULT_JOB_DETAILS: JobDetails = {
 export const useBuilderStore = create<BuilderState>()(
   persist(
     (set) => ({
-      currentStep: "details",
+      currentStep: "job",
       setCurrentStep: (step) => set({ currentStep: step }),
 
       businessDetails: DEFAULT_BUSINESS_DETAILS,
@@ -105,7 +105,7 @@ export const useBuilderStore = create<BuilderState>()(
 
       reset: () =>
         set({
-          currentStep: "details",
+          currentStep: "job",
           businessDetails: DEFAULT_BUSINESS_DETAILS,
           jobDetails: DEFAULT_JOB_DETAILS,
           photoHazards: [],

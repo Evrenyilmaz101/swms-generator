@@ -57,11 +57,7 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
   }, []);
 
   if (!isSupported) {
-    return (
-      <p className="text-xs text-muted">
-        Voice input not supported in this browser.
-      </p>
-    );
+    return null;
   }
 
   return (
@@ -70,47 +66,30 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
       disabled={disabled}
       onClick={isListening ? stopListening : startListening}
       className={`
-        flex items-center gap-3 w-full px-5 py-4 rounded-xl border-2
-        transition-all duration-200 cursor-pointer
+        inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium
+        transition-colors cursor-pointer border
         ${
           isListening
-            ? "border-error bg-error/5 text-error animate-pulse"
-            : "border-accent bg-accent/5 text-primary hover:bg-accent/10"
+            ? "bg-red-50 border-red-300 text-red-700 animate-pulse"
+            : "bg-[#FAFAF9] border-[#E7E5E4] text-[#0C0A09] hover:bg-[#F5F5F4]"
         }
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
     >
-      {/* Microphone icon */}
-      <div
-        className={`
-          w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0
-          ${isListening ? "bg-error text-white" : "bg-accent text-primary"}
-        `}
+      <svg
+        className="w-3.5 h-3.5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-          />
-        </svg>
-      </div>
-      <div className="text-left">
-        <span className="font-bold text-base">
-          {isListening ? "Tap to stop" : "Tap to talk"}
-        </span>
-        <p className="text-xs text-muted">
-          {isListening
-            ? "Listening... describe your job"
-            : "Describe the work instead of typing"}
-        </p>
-      </div>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+        />
+      </svg>
+      {isListening ? "Stop" : "Voice"}
     </button>
   );
 }

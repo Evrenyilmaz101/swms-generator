@@ -16,6 +16,9 @@ export function getStripe(): Stripe {
     _stripe = new Stripe(key, {
       apiVersion: "2026-02-25.clover",
       typescript: true,
+      timeout: 8000,
+      maxNetworkRetries: 0,
+      httpClient: Stripe.createNodeHttpClient(),
     });
   }
   return _stripe;

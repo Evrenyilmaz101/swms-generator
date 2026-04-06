@@ -32,12 +32,29 @@ export interface ProcedureStep {
   responsible: string;
 }
 
+export interface PlantEquipment {
+  item: string;
+  pre_use_checks: string;
+}
+
+export interface EmergencyContact {
+  role: string;
+  contact: string;
+}
+
 export interface SwmsData {
+  document_purpose: string;
   scope_of_work: string;
   hrcw_activities: string[];
+  environmental_conditions: string[];
+  training_competency: string[];
+  plant_equipment: PlantEquipment[];
   steps: ProcedureStep[];
   ppe_requirements: string[];
   emergency_procedures: string[];
+  emergency_contacts: EmergencyContact[];
+  permit_requirements: string[];
+  communication_consultation: string[];
   legislation_references: string[];
   toolbox_talk: string;
 }

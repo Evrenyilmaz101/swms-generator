@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe/stripe-server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +11,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await getStripe().checkout.sessions.retrieve(sessionId);
+    const key = process.env.STRIPE_SECRET_KEY?.trim();
+    if (!key) {
+      return NextResponse.json(
+        { success: false, error: "Payment system not configured" },
+        { status: 503 }
+      );
+    }
+
+    // Use native fetch — Stripe Node SDK HTTP clients fail on Vercel/Node 24
+    const res = await fetch(
+      `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`,
+      { headers: { "Authorization": `Bearer ${key}` } }
+    );
+    const session = await res.json();
+
+    if (!res.ok) {
+      console.error("Stripe session retrieve error:", session.error?.message);
+      return NextResponse.json(
+        { success: false, error: "Failed to verify payment" },
+        { status: 500 }
+      );
+    }
 
     if (session.payment_status !== "paid") {
       return NextResponse.json(

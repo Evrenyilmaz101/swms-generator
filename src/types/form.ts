@@ -1,4 +1,5 @@
 // Form step types for the builder flow
+// ORDER: Job first (value-first) → Review → Details → Checkout
 
 import type { AustralianState, PhotoHazard } from "./swms";
 
@@ -19,11 +20,11 @@ export interface JobDetails {
   photo_hazards: PhotoHazard[];
 }
 
-export type BuilderStep = "details" | "job" | "review" | "checkout";
+export type BuilderStep = "job" | "review" | "details" | "checkout";
 
 export const BUILDER_STEPS: { key: BuilderStep; label: string; path: string }[] = [
-  { key: "details", label: "Your Details", path: "/details" },
-  { key: "job", label: "Job Description", path: "/job" },
+  { key: "job", label: "Describe Job", path: "/job" },
   { key: "review", label: "Review SWMS", path: "/review" },
+  { key: "details", label: "Your Details", path: "/details" },
   { key: "checkout", label: "Download", path: "/checkout" },
 ];

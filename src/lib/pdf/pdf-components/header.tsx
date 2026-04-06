@@ -1,78 +1,110 @@
-// PDF Header: Company details + document metadata + compliance stamp
+// Page Header — Navy bar with company details + SWMS doc ID
+// Matches Pencil design: logo left, company name, doc number right
 
 import React from "react";
 import { View, Text, Image } from "@react-pdf/renderer";
 import { styles, COLORS } from "../pdf-styles";
 import type { SwmsDocument } from "@/types/swms";
-import { formatABN } from "@/lib/utils/format";
 
-interface HeaderProps {
+interface PdfHeaderProps {
   doc: SwmsDocument;
+  compact?: boolean;
 }
 
-export function PdfHeader({ doc }: HeaderProps) {
+export function PdfHeader({ doc, compact }: PdfHeaderProps) {
+  const headerStyle = compact ? styles.pageHeaderSmall : styles.pageHeader;
+
   return (
-    <>
-      <View style={styles.headerBar}>
-        <View style={styles.headerLeft}>
-          {doc.logo_base64 && (
-            <Image style={styles.logo} src={doc.logo_base64} />
-          )}
-          <Text style={styles.companyName}>{doc.business_name}</Text>
-          {doc.abn && (
-            <Text style={styles.companyDetail}>
-              ABN: {formatABN(doc.abn)}
-            </Text>
-          )}
-          <Text style={styles.companyDetail}>{doc.contact_name}</Text>
-          <Text style={styles.companyDetail}>{doc.phone}</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <Text style={styles.docTitle}>Safe Work Method Statement</Text>
-          <Text style={styles.docTitle}>(SWMS)</Text>
-          <Text style={styles.docMeta}>
-            Ref: {doc.document_reference}
+    <View style={headerStyle} fixed={!!compact}>
+      {/* Left — Logo + Company */}
+      <View style={styles.pageHeaderLeft}>
+        {doc.logo_base64 ? (
+          <View style={styles.logoBox}>
+            <Image src={doc.logo_base64} style={styles.logo} />
+          </View>
+        ) : (
+          <View style={[styles.logoBox, { width: compact ? 24 : 40, height: compact ? 24 : 40 }]}>
+            <Text style={{ fontSize: compact ? 7 : 9, fontWeight: "bold", color: COLORS.navy }}>LOGO</Text>
+          </View>
+        )}
+        <View>
+          <Text style={[styles.companyName, compact ? { fontSize: 10 } : {}]}>
+            {doc.business_name.toUpperCase()}
           </Text>
-          <Text style={styles.docMeta}>
-            Rev: {doc.revision_number} | Date: {doc.created_at}
-          </Text>
-          <Text style={styles.docMeta}>State: {doc.state}</Text>
+          {!compact && doc.abn && (
+            <Text style={styles.companyAbn}>ABN {doc.abn}</Text>
+          )}
         </View>
       </View>
 
-      {/* Compliance stamp */}
-      <View style={styles.complianceStamp}>
-        <Text style={styles.complianceStampText}>
-          AI-VERIFIED | WHS COMPLIANT | COMPLIANCE SCORE:{" "}
-          {doc.compliance_score}/100 | {doc.created_at}
+      {/* Right — Doc ID */}
+      <View style={styles.pageHeaderRight}>
+        {!compact && (
+          <Text style={styles.docLabel}>SWMS DOCUMENT</Text>
+        )}
+        <Text style={[styles.docId, compact ? { fontSize: 9 } : {}]}>
+          {doc.document_reference}
+        </Text>
+        <Text style={styles.docRev}>
+          Rev {doc.revision_number}.0  |  Issued {doc.created_at}
         </Text>
       </View>
+    </View>
+  );
+}
 
-      {/* Site details grid */}
-      <View style={styles.infoGrid}>
-        {doc.site_address && (
-          <View style={styles.infoCell}>
-            <Text style={styles.infoLabel}>Site Address</Text>
-            <Text style={styles.infoValue}>{doc.site_address}</Text>
+// Title bar — "SAFE WORK METHOD STATEMENT" (Page 1 only)
+export function PdfTitleBar() {
+  return (
+    <View style={styles.titleBar}>
+      <Text style={styles.titleText}>SAFE WORK METHOD STATEMENT</Text>
+      <Text style={styles.titleSubtext}>HIGH RISK CONSTRUCTION WORK</Text>
+    </View>
+  );
+}
+
+// PCBU + Project details two-column block
+export function PdfDetailsBlock({ doc }: { doc: SwmsDocument }) {
+  return (
+    <View style={[styles.content, { paddingTop: 14 }]}>
+      <View style={styles.twoCol}>
+        {/* PCBU Column */}
+        <View style={[styles.colHalf, styles.sectionCard]}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>PCBU (BUSINESS) DETAILS</Text>
           </View>
-        )}
-        {doc.principal_contractor && (
-          <View style={styles.infoCell}>
-            <Text style={styles.infoLabel}>Principal Contractor</Text>
-            <Text style={styles.infoValue}>{doc.principal_contractor}</Text>
+          <View style={styles.sectionBody}>
+            <InfoRow label="Company:" value={doc.business_name} />
+            <InfoRow label="ABN:" value={doc.abn || "—"} />
+            <InfoRow label="Contact:" value={doc.contact_name} />
+            <InfoRow label="Phone:" value={doc.phone} />
+            <InfoRow label="Date Prepared:" value={doc.created_at} />
           </View>
-        )}
-        {doc.job_reference && (
-          <View style={styles.infoCell}>
-            <Text style={styles.infoLabel}>Job Reference</Text>
-            <Text style={styles.infoValue}>{doc.job_reference}</Text>
+        </View>
+
+        {/* Project Column */}
+        <View style={[styles.colHalf, styles.sectionCard]}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>PROJECT & SITE DETAILS</Text>
           </View>
-        )}
-        <View style={styles.infoCell}>
-          <Text style={styles.infoLabel}>Prepared By</Text>
-          <Text style={styles.infoValue}>{doc.contact_name}</Text>
+          <View style={styles.sectionBody}>
+            <InfoRow label="Site Address:" value={doc.site_address || "—"} />
+            <InfoRow label="Principal:" value={doc.principal_contractor || "N/A"} />
+            <InfoRow label="Responsible:" value={doc.contact_name} />
+            <InfoRow label="State:" value={doc.state} />
+            <InfoRow label="Job Ref:" value={doc.job_reference || "—"} />
+          </View>
         </View>
       </View>
-    </>
+    </View>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
   );
 }

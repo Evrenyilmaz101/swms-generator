@@ -3,12 +3,13 @@ import { renderSwmsPdf } from "@/lib/pdf/render-pdf";
 import type { SwmsDocument } from "@/types/swms";
 
 // Preview/MVP download endpoint — generates PDF directly from POST body
-// In production, this is behind Stripe payment verification
+// Supports ?watermark=true for pre-payment preview (inline, not attachment)
 // The [token] route handles paid/authenticated downloads
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const watermark = body.watermark === true;
 
     if (!body.swms_data || !body.business_name || !body.state) {
       return NextResponse.json(
@@ -36,13 +37,18 @@ export async function POST(request: NextRequest) {
       created_at: body.created_at || new Date().toLocaleDateString("en-AU"),
     };
 
-    const pdfBuffer = await renderSwmsPdf(doc);
+    const pdfBuffer = await renderSwmsPdf(doc, { watermark });
+
+    // Watermarked previews are inline (shown in iframe), not downloaded
+    const disposition = watermark
+      ? "inline"
+      : `attachment; filename="SWMS-${doc.business_name.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`;
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="SWMS-${doc.business_name.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`,
+        "Content-Disposition": disposition,
         "Content-Length": pdfBuffer.length.toString(),
       },
     });

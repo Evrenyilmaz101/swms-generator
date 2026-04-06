@@ -96,7 +96,7 @@ export default async function SeoPage({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Product",
-              name: `${tradePage.trade} SWMS Generator`,
+              name: `${tradePage.trade} SWMS — Instant SWMS`,
               description: tradePage.metaDescription,
               offers: {
                 "@type": "Offer",

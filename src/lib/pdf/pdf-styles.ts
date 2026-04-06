@@ -1,4 +1,5 @@
 // PDF Stylesheet for @react-pdf/renderer
+// Professional SWMS document — matches Pencil design
 // Uses Yoga flexbox layout engine (not CSS)
 
 import { StyleSheet, Font } from "@react-pdf/renderer";
@@ -19,188 +20,261 @@ Font.register({
 // Disable hyphenation (looks terrible in tables)
 Font.registerHyphenationCallback((word) => [word]);
 
-// Color palette -- high-vis construction theme
+// Color palette — professional SWMS document
 export const COLORS = {
-  primary: "#1e293b", // Dark navy/slate
-  accent: "#f59e0b", // High-vis amber/yellow
-  accentDark: "#d97706",
+  // Primary
+  navy: "#0E2A4D",
+  navyLight: "#1E4A7A",
+  orange: "#E87722",
   white: "#ffffff",
-  gray50: "#f8fafc",
-  gray100: "#f1f5f9",
-  gray200: "#e2e8f0",
-  gray300: "#cbd5e1",
-  gray500: "#64748b",
-  gray700: "#334155",
-  gray900: "#0f172a",
-  green: "#16a34a",
-  greenLight: "#dcfce7",
-  red: "#dc2626",
-  redLight: "#fef2f2",
-  orange: "#ea580c",
-  orangeLight: "#fff7ed",
-  yellow: "#ca8a04",
-  yellowLight: "#fefce8",
+
+  // Grays
+  gray50: "#F8F9FA",
+  gray100: "#EEF2F6",
+  gray200: "#D0D5DD",
+  gray300: "#A8A29E",
+  gray500: "#555555",
+  gray700: "#333333",
+  gray900: "#1A1A1A",
+
+  // Risk colors
+  riskLow: "#4CAF50",
+  riskLowBg: "#E8F5E9",
+  riskModerate: "#FDD835",
+  riskModerateBg: "#FFFDE7",
+  riskHigh: "#FB8C00",
+  riskHighBg: "#FFF3E0",
+  riskExtreme: "#D32F2F",
+  riskExtremeBg: "#FFEBEE",
+
+  // Hierarchy of controls
+  hocEliminate: "#2E7D32",
+  hocSubstitute: "#388E3C",
+  hocIsolate: "#689F38",
+  hocEngineering: "#FBC02D",
+  hocAdmin: "#F57C00",
+  hocPpe: "#D32F2F",
+
+  // Status
+  green: "#2E7D32",
+  greenBg: "#E8F5E9",
 };
 
 export const styles = StyleSheet.create({
   // Page
   page: {
     fontFamily: "Inter",
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.gray900,
-    paddingTop: 60,
-    paddingBottom: 60,
-    paddingHorizontal: 40,
+    paddingTop: 0,
+    paddingBottom: 40,
+    paddingHorizontal: 0,
   },
 
-  // Header
-  headerBar: {
+  // ===== PAGE HEADER (navy bar, every page) =====
+  pageHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.accent,
+    alignItems: "center",
+    backgroundColor: COLORS.navy,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 0,
   },
-  headerLeft: {
-    flex: 1,
+  pageHeaderSmall: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: COLORS.navy,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    marginBottom: 0,
   },
-  companyName: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: COLORS.primary,
-    marginBottom: 2,
-  },
-  companyDetail: {
-    fontSize: 8,
-    color: COLORS.gray500,
-    marginBottom: 1,
-  },
-  headerRight: {
-    alignItems: "flex-end",
-  },
-  docTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: COLORS.primary,
-    marginBottom: 4,
-  },
-  docMeta: {
-    fontSize: 7,
-    color: COLORS.gray500,
-    marginBottom: 1,
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    objectFit: "contain",
-    marginBottom: 4,
-  },
-
-  // Compliance stamp
-  complianceStamp: {
+  pageHeaderLeft: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.greenLight,
-    borderWidth: 1,
-    borderColor: COLORS.green,
-    borderRadius: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    marginBottom: 12,
+    gap: 10,
   },
-  complianceStampText: {
-    fontSize: 7,
-    fontWeight: "bold",
-    color: COLORS.green,
+  logoBox: {
+    width: 40,
+    height: 40,
+    backgroundColor: COLORS.white,
+    borderRadius: 3,
+    justifyContent: "center",
+    alignItems: "center",
   },
-
-  // Section headers
-  sectionHeader: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    marginTop: 12,
-    marginBottom: 6,
+  logo: {
+    width: 36,
+    height: 36,
+    objectFit: "contain",
   },
-  sectionHeaderText: {
-    fontSize: 10,
+  companyName: {
+    fontSize: 12,
     fontWeight: "bold",
     color: COLORS.white,
+    letterSpacing: 0.3,
   },
-
-  // Sub-section
-  subHeader: {
-    fontSize: 9,
+  companyAbn: {
+    fontSize: 8,
+    color: "#FFFFFFCC",
+  },
+  pageHeaderRight: {
+    alignItems: "flex-end",
+  },
+  docLabel: {
+    fontSize: 8,
     fontWeight: "bold",
-    color: COLORS.primary,
-    marginTop: 8,
-    marginBottom: 4,
+    color: COLORS.orange,
+    letterSpacing: 1,
+  },
+  docId: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: COLORS.white,
+    letterSpacing: 0.3,
+  },
+  docRev: {
+    fontSize: 8,
+    color: "#FFFFFFCC",
   },
 
-  // Body text
-  bodyText: {
+  // ===== TITLE BAR =====
+  titleBar: {
+    backgroundColor: COLORS.gray100,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray200,
+  },
+  titleText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: COLORS.navy,
+    letterSpacing: 2,
+  },
+  titleSubtext: {
     fontSize: 9,
-    lineHeight: 1.4,
+    fontWeight: "semibold",
+    color: COLORS.gray500,
+    letterSpacing: 3,
+    marginTop: 2,
+  },
+
+  // ===== CONTENT AREA =====
+  content: {
+    paddingHorizontal: 24,
+    paddingTop: 12,
+  },
+
+  // ===== SECTION CARDS =====
+  sectionCard: {
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: 3,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  sectionHeader: {
+    backgroundColor: COLORS.navy,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  sectionHeaderText: {
+    fontSize: 8,
+    fontWeight: "bold",
+    color: COLORS.white,
+    letterSpacing: 1,
+  },
+  sectionHeaderNote: {
+    fontSize: 7,
+    color: "#FFFFFFAA",
+  },
+  sectionBody: {
+    padding: 10,
+  },
+
+  // Emergency section header (red)
+  sectionHeaderEmergency: {
+    backgroundColor: COLORS.riskExtreme,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  // ===== TWO COLUMN LAYOUT =====
+  twoCol: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  colHalf: {
+    flex: 1,
+  },
+
+  // ===== INFO ROWS (label: value) =====
+  infoRow: {
+    flexDirection: "row",
+    marginBottom: 5,
+    gap: 6,
+  },
+  infoLabel: {
+    fontSize: 7.5,
+    fontWeight: "bold",
+    color: COLORS.gray500,
+    width: 75,
+  },
+  infoValue: {
+    fontSize: 8,
+    fontWeight: "semibold",
+    color: COLORS.gray900,
+    flex: 1,
+  },
+
+  // ===== BODY TEXT =====
+  bodyText: {
+    fontSize: 8,
+    lineHeight: 1.5,
     color: COLORS.gray700,
     marginBottom: 4,
   },
 
-  // Info grid (site details)
-  infoGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 8,
-  },
-  infoCell: {
-    width: "50%",
-    paddingVertical: 3,
-    paddingRight: 8,
-  },
-  infoLabel: {
-    fontSize: 7,
-    fontWeight: "bold",
-    color: COLORS.gray500,
-    textTransform: "uppercase",
-    marginBottom: 1,
-  },
-  infoValue: {
-    fontSize: 9,
-    color: COLORS.gray900,
-  },
-
-  // Tables
+  // ===== TABLES =====
   table: {
-    marginBottom: 8,
+    marginBottom: 0,
   },
   tableHeaderRow: {
     flexDirection: "row",
-    backgroundColor: COLORS.primary,
-    minHeight: 24,
+    backgroundColor: COLORS.navy,
+    minHeight: 20,
   },
   tableRow: {
     flexDirection: "row",
-    minHeight: 20,
+    minHeight: 18,
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.gray200,
   },
   tableRowAlt: {
     flexDirection: "row",
-    minHeight: 20,
+    minHeight: 18,
     backgroundColor: COLORS.gray50,
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.gray200,
   },
   tableHeaderCell: {
-    paddingVertical: 4,
+    paddingVertical: 3,
     paddingHorizontal: 4,
     justifyContent: "center",
   },
   tableHeaderText: {
-    fontSize: 7,
+    fontSize: 6.5,
     fontWeight: "bold",
     color: COLORS.white,
+    letterSpacing: 0.3,
   },
   tableCell: {
     paddingVertical: 4,
@@ -208,47 +282,53 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tableCellText: {
-    fontSize: 7.5,
+    fontSize: 7,
     color: COLORS.gray700,
     lineHeight: 1.3,
   },
 
-  // Risk badges
+  // ===== RISK BADGES =====
   riskBadge: {
     paddingVertical: 2,
-    paddingHorizontal: 4,
+    paddingHorizontal: 6,
     borderRadius: 2,
     alignSelf: "flex-start",
   },
   riskBadgeText: {
-    fontSize: 6.5,
+    fontSize: 7,
     fontWeight: "bold",
     textAlign: "center",
   },
 
-  // HRCW checklist
+  // ===== HRCW CHECKLIST =====
+  hrcwGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  hrcwCol: {
+    flex: 1,
+  },
   hrcwItem: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 3,
-    paddingLeft: 4,
+    marginBottom: 4,
   },
   hrcwCheckbox: {
-    width: 10,
-    height: 10,
+    width: 9,
+    height: 9,
     borderWidth: 1,
     borderColor: COLORS.gray300,
+    borderRadius: 1,
     marginRight: 6,
     marginTop: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   hrcwCheckboxChecked: {
-    width: 10,
-    height: 10,
-    borderWidth: 1,
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.accent,
+    width: 9,
+    height: 9,
+    borderRadius: 1,
+    backgroundColor: COLORS.navy,
     marginRight: 6,
     marginTop: 1,
     justifyContent: "center",
@@ -260,20 +340,27 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   hrcwText: {
-    fontSize: 8,
+    fontSize: 7,
     color: COLORS.gray700,
     flex: 1,
+    lineHeight: 1.2,
+  },
+  hrcwTextBold: {
+    fontSize: 7,
+    fontWeight: "bold",
+    color: COLORS.gray900,
+    flex: 1,
+    lineHeight: 1.2,
   },
 
-  // Bullet list
+  // ===== BULLET LIST =====
   bulletItem: {
     flexDirection: "row",
     marginBottom: 3,
-    paddingLeft: 8,
   },
   bullet: {
     fontSize: 8,
-    color: COLORS.accent,
+    color: COLORS.orange,
     marginRight: 6,
     width: 8,
   },
@@ -281,18 +368,18 @@ export const styles = StyleSheet.create({
     fontSize: 8,
     color: COLORS.gray700,
     flex: 1,
-    lineHeight: 1.3,
+    lineHeight: 1.4,
   },
 
-  // Signature block
+  // ===== SIGNATURE TABLE =====
   signatureTable: {
-    marginTop: 8,
+    marginTop: 0,
   },
   signatureRow: {
     flexDirection: "row",
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.gray200,
-    minHeight: 36,
+    minHeight: 32,
   },
   signatureCell: {
     flex: 1,
@@ -309,16 +396,78 @@ export const styles = StyleSheet.create({
   },
   signatureLine: {
     borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.gray300,
+    borderBottomColor: COLORS.gray200,
     height: 16,
   },
 
-  // Footer
+  // ===== PPE GRID =====
+  ppeGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  ppeItem: {
+    width: "18%",
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: 3,
+    padding: 6,
+    alignItems: "center",
+    gap: 2,
+  },
+  ppeItemRequired: {
+    width: "18%",
+    borderWidth: 2,
+    borderColor: COLORS.navy,
+    backgroundColor: COLORS.gray50,
+    borderRadius: 3,
+    padding: 6,
+    alignItems: "center",
+    gap: 2,
+  },
+
+  // ===== TOOLBOX TALK =====
+  toolboxTalkBox: {
+    backgroundColor: COLORS.gray50,
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: 3,
+    padding: 10,
+    marginBottom: 8,
+  },
+
+  // ===== HIERARCHY OF CONTROLS =====
+  hocBar: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 2,
+  },
+  hocNum: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: COLORS.white,
+  },
+  hocText: {
+    fontSize: 7,
+    fontWeight: "bold",
+    color: COLORS.white,
+  },
+  hocTextDark: {
+    fontSize: 7,
+    fontWeight: "bold",
+    color: COLORS.gray900,
+  },
+
+  // ===== FOOTER =====
   footer: {
     position: "absolute",
-    bottom: 25,
-    left: 40,
-    right: 40,
+    bottom: 15,
+    left: 24,
+    right: 24,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -332,6 +481,7 @@ export const styles = StyleSheet.create({
   },
   pageNumber: {
     fontSize: 7,
+    fontWeight: "semibold",
     color: COLORS.gray500,
   },
 });

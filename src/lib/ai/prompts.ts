@@ -52,9 +52,22 @@ When identifying HRCW activities, use the EXACT category numbers (1-19) from the
 const OUTPUT_SCHEMA_PROMPT = `Respond ONLY with valid JSON matching this exact structure. No markdown, no explanation, no preamble — just the JSON object.
 
 {
+  "document_purpose": "A 1-2 sentence statement of the purpose and applicability of this SWMS. E.g. 'This SWMS applies to all roof replacement works at the specified site. It must be reviewed by all workers prior to commencing work and is valid for the duration of the project unless site conditions change.'",
   "scope_of_work": "A clear 2-3 sentence description of the overall scope of work being performed, the location, and the key activities involved.",
   "hrcw_activities": [
     "Category number and description for each applicable HRCW category, e.g. '1. Work at height where there is risk of a fall of more than 2 metres'"
+  ],
+  "environmental_conditions": [
+    "Site-specific environmental conditions that affect the work and their management. E.g. 'Wind — cease work at heights if wind exceeds 40km/h', 'Wet weather — slippery surfaces increase fall risk, suspend roof work during rain', 'UV exposure — rotate workers, provide shade breaks, sunscreen available', 'Noise — neighbouring residents within 50m, restrict noisy work to 7am-6pm'"
+  ],
+  "training_competency": [
+    "Required qualifications, licences, and competencies for workers on this job. E.g. 'Working at Heights (RIIWHS204E)', 'White Card (CPCCWHS1001)', 'EWP Licence (TLILIC0005)', 'Current First Aid Certificate (HLTAID011)', 'Site-specific induction completed'"
+  ],
+  "plant_equipment": [
+    {
+      "item": "Name of the plant or equipment, e.g. 'Elevated Work Platform (EWP) — scissor lift'",
+      "pre_use_checks": "Required pre-use inspection, e.g. 'Daily pre-start inspection per manufacturer checklist, check hydraulics, tyres, guardrails, emergency descent. Current plant registration and maintenance log required.'"
+    }
   ],
   "steps": [
     {
@@ -84,6 +97,18 @@ const OUTPUT_SCHEMA_PROMPT = `Respond ONLY with valid JSON matching this exact s
   ],
   "emergency_procedures": [
     "Emergency procedures specific to the hazards identified in this SWMS. E.g. 'In the event of a fall from height: Do not move the injured person. Call 000 immediately. Administer first aid if trained. Secure the area to prevent further falls.' — NOT generic procedures like 'Call emergency services'."
+  ],
+  "emergency_contacts": [
+    {
+      "role": "The role or service, e.g. 'Emergency Services', 'Site Supervisor', 'Poisons Information', 'Electrical Authority'",
+      "contact": "The phone number or contact method, e.g. '000', 'Site-specific — enter before work commences', '13 11 26'"
+    }
+  ],
+  "permit_requirements": [
+    "Any permits to work required before commencing. E.g. 'Hot Work Permit required for all welding and cutting operations', 'Confined Space Entry Permit (if applicable)', 'Electrical isolation and lock-out/tag-out procedure to be completed before work on energised systems'. If no permits are required, include a single item: 'No additional permits required for this scope of work.'"
+  ],
+  "communication_consultation": [
+    "How workers are consulted and kept informed. E.g. 'All workers to attend pre-start toolbox talk before commencing work', 'Changes to work method or site conditions to be communicated immediately to Site Supervisor', 'Workers have the right to cease work if they identify an immediate risk — report to supervisor without delay', 'This SWMS to be reviewed if scope, site conditions, or personnel change'"
   ],
   "legislation_references": [
     "Specific legislative references applicable to this work in the specified jurisdiction. Include the Act, Regulations, and any relevant Australian Standards. E.g. 'Work Health and Safety Act 2011 (NSW), Section 19 — Primary duty of care'."
