@@ -124,3 +124,48 @@ body {
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
+
+/* Legal pages typography */
+.legal-prose h1 {
+  font-family: var(--font-display, "Bricolage Grotesque"), sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.legal-prose .legal-updated {
+  font-size: 0.8rem;
+  color: var(--c-text-dim);
+  margin-bottom: 2.5rem;
+}
+.legal-prose h2 {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #fff;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+.legal-prose p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--c-text);
+  margin-bottom: 1rem;
+}
+.legal-prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.legal-prose li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--c-text);
+  margin-bottom: 0.35rem;
+}
+.legal-prose a {
+  color: var(--c-yellow);
+  text-decoration: underline;
+}
+.legal-prose strong {
+  color: #fff;
+}

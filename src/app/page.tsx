@@ -495,8 +495,9 @@ export default function Home() {
               <span className="font-extrabold text-white ml-1">SWMS</span>
             </span>
             <div className="flex gap-6 text-xs text-[var(--c-text-dim)]">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+              <Link href="/refunds" className="hover:text-white transition-colors">Refunds</Link>
               <a href="mailto:support@swmsgenerator.com.au" className="hover:text-white transition-colors">Contact</a>
             </div>
           </div>
