@@ -115,6 +115,15 @@ export default function Home() {
           <p className="mt-5" style={{ fontFamily: "'DM Sans'", fontSize: "clamp(16px, 4.5vw, 22px)", fontWeight: 800, color: "rgba(0,0,0,0.7)", letterSpacing: -0.5 }}>
             Site-ready, WHS-compliant SWMS in 60 seconds
           </p>
+
+          {/* Hero illustration — mobile */}
+          <div className="rise d-7 mt-6 -mb-8">
+            <img
+              src="/images/hero-tradie.png"
+              alt="Frustrated Australian tradie overwhelmed by SWMS paperwork"
+              className="float-bob w-full max-w-md mx-auto object-contain"
+            />
+          </div>
         </div>
 
         {/* ── DESKTOP HERO (>= lg) — original Pencil layout ── */}
