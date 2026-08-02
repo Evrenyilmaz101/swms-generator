@@ -1,34 +1,34 @@
 import Link from "next/link";
 
+const MONO = "'IBM Plex Mono', monospace";
+const COND = "'Barlow Condensed', sans-serif";
+
 export default function LegalLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-screen bg-[var(--c-dark)] text-[var(--c-text)]">
-      <header className="px-5 py-5 border-b border-white/[0.04]">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-lg tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-            <span className="font-extrabold text-[var(--c-yellow)]">Instant</span>
-            <span className="font-extrabold text-white ml-1">SWMS</span>
+    <div style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", fontFamily: "var(--f-body)" }}>
+      <header style={{ background: "var(--paper)", borderBottom: "2px solid var(--ink)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", padding: "10px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+          <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 25, height: 25, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 5px, var(--swa) 5px 10px)" }} />
+            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>INSTANT SWMS</div>
           </Link>
-          <Link
-            href="/job"
-            className="text-sm font-bold bg-[var(--c-yellow)] text-[var(--c-dark)] px-4 py-2 rounded-lg hover:bg-[var(--c-yellow-dim)] transition-colors"
-          >
-            Build Your SWMS
+          <Link href="/job" className="sw-btn sw-btn-sm" style={{ padding: "8px 16px", fontSize: 15 }}>
+            BUILD YOUR SWMS
           </Link>
         </div>
       </header>
-      <main className="px-5 py-12">
-        <article className="max-w-3xl mx-auto legal-prose">{children}</article>
+      <main style={{ padding: "48px 28px" }}>
+        <article style={{ maxWidth: 760, margin: "0 auto" }} className="legal-prose">{children}</article>
       </main>
-      <footer className="px-5 py-8 border-t border-white/[0.04]">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--c-text-dim)]">
-          <span>&copy; {new Date().getFullYear()} Instant SWMS. Built in Australia.</span>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/refunds" className="hover:text-white transition-colors">Refunds</Link>
+      <footer style={{ borderTop: "2px solid var(--ink)", padding: "24px 28px" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, fontFamily: MONO, fontSize: 11, letterSpacing: ".08em", color: "rgba(26,25,23,.6)" }}>
+          <span>© {new Date().getFullYear()} INSTANT SWMS · BUILT IN AUSTRALIA</span>
+          <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/privacy" className="sw-link">PRIVACY</Link>
+            <Link href="/terms" className="sw-link">TERMS</Link>
+            <Link href="/refunds" className="sw-link">REFUNDS</Link>
           </div>
         </div>
       </footer>

@@ -4,7 +4,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { PhotoHazard } from "@/types/swms";
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-5";
 
 function getClient(): Anthropic {
   return new Anthropic({
@@ -68,7 +68,9 @@ export async function analyzePhoto(
 
   const message = await getClient().messages.create({
     model: MODEL,
-    max_tokens: 2048,
+    max_tokens: 3072,
+    // Disabled: photo hazard scan needs fast turnaround, not extended reasoning
+    thinking: { type: "disabled" },
     system: PHOTO_ANALYSIS_PROMPT,
     messages: [{ role: "user", content: userContent }],
   });

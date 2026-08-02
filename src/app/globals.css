@@ -73,7 +73,7 @@ body {
   );
 }
 
-/* 3D card effect â€” shadow on bottom-right, pops up on hover */
+/* 3D card effect — shadow on bottom-right, pops up on hover */
 .card-3d {
   box-shadow:
     6px 6px 0 rgba(0,0,0,0.5),
@@ -125,49 +125,62 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
-/* Legal pages typography */
+/* Legal pages typography — paper/ink design system */
 .legal-prose h1 {
-  font-family: var(--font-display, "Bricolage Grotesque"), sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 800;
-  font-size: 2rem;
-  color: #fff;
+  font-size: 2.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink);
   margin-bottom: 0.5rem;
 }
 .legal-prose .legal-updated {
-  font-size: 0.8rem;
-  color: var(--c-text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(26,25,23,.55);
   margin-bottom: 2.5rem;
 }
 .legal-prose h2 {
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
-  font-size: 1.15rem;
-  color: #fff;
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--ink);
+  border-top: 2px solid var(--ink);
+  padding-top: 1rem;
   margin-top: 2.25rem;
   margin-bottom: 0.75rem;
 }
 .legal-prose p {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: var(--c-text);
+  color: rgba(26,25,23,.85);
   margin-bottom: 1rem;
 }
 .legal-prose ul {
-  list-style: disc;
+  list-style: square;
   padding-left: 1.5rem;
   margin-bottom: 1rem;
 }
 .legal-prose li {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: var(--c-text);
+  color: rgba(26,25,23,.85);
   margin-bottom: 0.35rem;
 }
 .legal-prose a {
-  color: var(--c-yellow);
+  color: var(--ink);
   text-decoration: underline;
 }
+.legal-prose a:hover {
+  color: var(--sorange);
+}
 .legal-prose strong {
-  color: #fff;
+  color: var(--ink);
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â• Landing page motion & texture â•â•â•â•â•â•â•â•â•â•â• */
@@ -304,4 +317,133 @@ body {
   .float-bob, .wiggle, .marquee-track, .pulse-ring, .blink-dot, .nudge-x {
     animation: none;
   }
+}
+
+/* ═══════════ "Site document" design system (landing + builder redesign) ═══════════ */
+
+:root {
+  --swa: #F2DE1B;        /* hi-vis accent */
+  --ink: #1A1917;
+  --paper: #F4F1E9;
+  --paper2: #ECE8DD;
+  --card: #FDFCF7;
+  --sorange: #C7480F;    /* safety orange */
+  --risk-h: #D6491B;
+  --risk-m: #E3B90F;
+  --risk-l: #3F9C55;
+  --risk-x: #7A1B0C;
+  --f-cond: 'Barlow Condensed', sans-serif;
+  --f-body: 'Barlow', sans-serif;
+  --f-mono: 'IBM Plex Mono', monospace;
+}
+
+::selection {
+  background: var(--swa);
+  color: var(--ink);
+}
+
+/* Accent CTA — hard shadow, presses down on hover */
+.sw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--swa);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  font-family: var(--f-cond);
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.sw-btn:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--ink); color: var(--ink); }
+.sw-btn:disabled { opacity: .4; cursor: default; }
+.sw-btn:disabled:hover { transform: none; box-shadow: 6px 6px 0 var(--ink); }
+
+.sw-btn-sm { box-shadow: 4px 4px 0 var(--ink); }
+.sw-btn-sm:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+
+/* Outlined button — fills ink on hover */
+.sw-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  font-family: var(--f-cond);
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.sw-ghost:hover { background: var(--ink); color: var(--paper); }
+
+/* Ink mega button */
+.sw-btn-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 7px 7px 0 rgba(26,25,23,.35);
+  font-family: var(--f-cond);
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.sw-btn-ink:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 rgba(26,25,23,.35); color: var(--paper); }
+
+/* Mono ghost chip (example fillers) */
+.sw-chip-ghost {
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--f-mono);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.sw-chip-ghost:hover { background: var(--ink); color: var(--paper); }
+
+/* Mono nav/footer links */
+.sw-link { color: var(--ink); text-decoration: none; transition: color .15s ease; }
+.sw-link:hover { color: var(--sorange); }
+.sw-link-paper { color: var(--paper); text-decoration: none; transition: color .15s ease; }
+.sw-link-paper:hover { color: var(--swa); }
+
+/* Keyframes (namespaced sw*) */
+@keyframes swMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes swBar { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+@keyframes swBlink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes swPulse { 0% { box-shadow: 0 0 0 0 rgba(26,25,23,.25); } 100% { box-shadow: 0 0 0 16px rgba(26,25,23,0); } }
+@keyframes swRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes swDocIn { from { opacity: 0; transform: rotate(-2deg) translateX(70px); } to { opacity: 1; transform: rotate(-2deg); } }
+@keyframes swDoc2In { from { opacity: 0; transform: rotate(4deg) translate(100px,-16px); } to { opacity: 1; transform: rotate(4deg) translate(30px,-16px); } }
+@keyframes swStamp { 0% { opacity: 0; transform: rotate(-9deg) scale(1.8); } 60% { opacity: 1; transform: rotate(-9deg) scale(.92); } 100% { opacity: 1; transform: rotate(-9deg) scale(1); } }
+@keyframes swTagIn { from { opacity: 0; transform: rotate(2.5deg) translateY(16px); } to { opacity: 1; transform: rotate(2.5deg); } }
+@keyframes swSlide { to { background-position: 56px 0; } }
+
+/* Hero entrance — armed only once the page is painting (sw-ready), so a
+   hydration/render stall can never leave content invisible */
+.sw-ready .swHeroRise { animation: swRise .6s both; }
+.sw-ready .swHeroDoc { animation: swDocIn .7s .22s both; }
+.sw-ready .swHeroDoc2 { animation: swDoc2In .7s .3s both; }
+.sw-ready .swHeroStamp { animation: swStamp .55s cubic-bezier(.2,1.5,.4,1) .85s both; }
+.sw-ready .swHeroTag { animation: swTagIn .5s 1.05s both; }
+
+.sw-marquee { display: flex; width: max-content; animation: swMarquee 28s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-ready .swHeroRise, .sw-ready .swHeroDoc, .sw-ready .swHeroDoc2,
+  .sw-ready .swHeroStamp, .sw-ready .swHeroTag { animation: none; }
+  .sw-marquee { animation: none; }
 }

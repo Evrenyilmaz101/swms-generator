@@ -1,4 +1,4 @@
-// SEO landing page data for state-specific and trade-specific pages
+﻿// SEO landing page data for state-specific and trade-specific pages
 // Each page targets a high-intent search keyword
 
 import type { AustralianState } from "@/types/swms";
@@ -46,7 +46,7 @@ export const SEO_STATE_PAGES: SeoStatePage[] = [
       "Generate a compliant NSW SWMS in 60 seconds. References Work Health and Safety Act 2011 (NSW) and WHS Regulation 2017. From $7.99.",
     h1: "NSW SWMS Template Generator",
     intro:
-      "Need a SWMS for a job in New South Wales? Our AI generator creates compliant Safe Work Method Statements that reference the correct NSW legislation, including the Work Health and Safety Act 2011 and WHS Regulation 2017.",
+      "Need a SWMS for a job in New South Wales? Our generator creates compliant Safe Work Method Statements that reference the correct NSW legislation, including the Work Health and Safety Act 2011 and WHS Regulation 2017.",
     whyNeeded:
       "Under NSW WHS law, a SWMS is required before any high-risk construction work (HRCW) begins. The principal contractor must ensure a SWMS is prepared and followed for all 19 categories of HRCW defined in the WHS Regulation 2017, Part 6.3.",
     fines:
@@ -65,7 +65,7 @@ export const SEO_STATE_PAGES: SeoStatePage[] = [
       "Generate a compliant Victorian SWMS in 60 seconds. References OHS Act 2004 (Vic) and OHS Regulations 2017. From $7.99.",
     h1: "Victorian SWMS Template Generator",
     intro:
-      "Working on a construction job in Victoria? Victoria uses the Occupational Health and Safety Act 2004 — not the harmonised WHS framework used by most other states. Our AI generator knows the difference and produces SWMS documents with the correct Victorian legislation.",
+      "Working on a construction job in Victoria? Victoria uses the Occupational Health and Safety Act 2004 — not the harmonised WHS framework used by most other states. Our generator knows the difference and produces SWMS documents with the correct Victorian legislation.",
     whyNeeded:
       "Victoria requires a SWMS for high-risk construction work under the OHS Regulations 2017, Part 5.1. While the terminology differs slightly from the national WHS framework, the requirement for a documented safe work method statement is equally strict.",
     fines:
@@ -84,7 +84,7 @@ export const SEO_STATE_PAGES: SeoStatePage[] = [
       "Generate a compliant QLD SWMS in 60 seconds. References Work Health and Safety Act 2011 (Qld). From $7.99.",
     h1: "Queensland SWMS Template Generator",
     intro:
-      "Doing construction work in Queensland? Our AI generates SWMS documents that reference the Work Health and Safety Act 2011 (Qld) and WHS Regulation 2011, including all required elements for HRCW compliance.",
+      "Doing construction work in Queensland? We generate SWMS documents that reference the Work Health and Safety Act 2011 (Qld) and WHS Regulation 2011, including all required elements for HRCW compliance.",
     whyNeeded:
       "Queensland adopted the harmonised WHS framework. A SWMS must be prepared before any high-risk construction work commences, as defined in Chapter 6, Part 3 of the WHS Regulation 2011 (Qld).",
     fines:
@@ -122,7 +122,7 @@ export const SEO_STATE_PAGES: SeoStatePage[] = [
       "Generate a compliant SA SWMS in 60 seconds. References Work Health and Safety Act 2012 (SA). From $7.99.",
     h1: "South Australia SWMS Template Generator",
     intro:
-      "Need a SWMS for a South Australian job? Our AI generator creates compliant documents referencing the Work Health and Safety Act 2012 (SA) and WHS Regulations 2012.",
+      "Need a SWMS for a South Australian job? Our generator creates compliant documents referencing the Work Health and Safety Act 2012 (SA) and WHS Regulations 2012.",
     whyNeeded:
       "South Australia follows the harmonised WHS framework. A SWMS is required before commencing any of the 19 categories of high-risk construction work defined in Part 6.3 of the WHS Regulations 2012 (SA).",
     fines:
@@ -141,7 +141,7 @@ export const SEO_STATE_PAGES: SeoStatePage[] = [
       "Generate a compliant Tasmanian SWMS in 60 seconds. References Work Health and Safety Act 2012 (Tas). From $7.99.",
     h1: "Tasmania SWMS Template Generator",
     intro:
-      "Working on a Tasmanian construction site? Our AI generates SWMS documents compliant with the Work Health and Safety Act 2012 (Tas) and WHS Regulations 2012.",
+      "Working on a Tasmanian construction site? We generate SWMS documents compliant with the Work Health and Safety Act 2012 (Tas) and WHS Regulations 2012.",
     whyNeeded:
       "Tasmania follows the harmonised WHS framework. A SWMS must be prepared and followed for all high-risk construction work as defined in Part 6.3 of the WHS Regulations 2012 (Tas).",
     fines:
@@ -160,7 +160,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional electrician SWMS in 60 seconds. Covers electrical isolation, live work, switchboard installation, cable pulling. From $7.99.",
     h1: "Electrician SWMS Generator",
     intro:
-      "Electrical work is one of the most hazardous trades. Our AI generates SWMS documents specifically tailored for electrical work — covering isolation procedures, arc flash protection, EWP work, cable pulling, and switchboard installation.",
+      "Electrical work is one of the most hazardous trades. We generate SWMS documents specifically tailored for electrical work — covering isolation procedures, arc flash protection, EWP work, cable pulling, and switchboard installation.",
     commonHazards: [
       "Electrical shock and electrocution",
       "Arc flash and arc blast",
@@ -187,7 +187,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional plumbing SWMS in 60 seconds. Covers trenching, hot work, confined spaces, drainage. From $7.99.",
     h1: "Plumber SWMS Generator",
     intro:
-      "Plumbing work involves multiple high-risk activities from trenching to hot work to confined spaces. Our AI understands plumbing-specific hazards and generates comprehensive SWMS documents for every type of plumbing job.",
+      "Plumbing work involves multiple high-risk activities from trenching to hot work to confined spaces. We understand plumbing-specific hazards and generate comprehensive SWMS documents for every type of plumbing job.",
     commonHazards: [
       "Trench collapse during excavation",
       "Burns from soldering and brazing",
@@ -214,7 +214,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional builder SWMS in 60 seconds. Covers framing, roofing, demolition, concrete work. From $7.99.",
     h1: "Builder SWMS Generator",
     intro:
-      "Builders work across almost every high-risk category — heights, demolition, structural work, mobile plant, and more. Our AI generates builder-specific SWMS documents that cover the full scope of your job.",
+      "Builders work across almost every high-risk category — heights, demolition, structural work, mobile plant, and more. We generate builder-specific SWMS documents that cover the full scope of your job.",
     commonHazards: [
       "Falls from scaffolding and roofs",
       "Struck by falling objects",
@@ -242,7 +242,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional roofing SWMS in 60 seconds. Covers working at heights, fragile roofs, metal roofing, guttering. From $7.99.",
     h1: "Roofer SWMS Generator",
     intro:
-      "Roofing is consistently one of the highest-risk construction trades due to working at heights. Our AI generates roofing-specific SWMS with proper fall protection controls, edge protection requirements, and weather considerations.",
+      "Roofing is consistently one of the highest-risk construction trades due to working at heights. We generate roofing-specific SWMS with proper fall protection controls, edge protection requirements, and weather considerations.",
     commonHazards: [
       "Falls from roof edges and through fragile surfaces",
       "Slips on wet or steep roof surfaces",
@@ -267,7 +267,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional concreting SWMS in 60 seconds. Covers tilt-up panels, formwork, concrete pumping. From $7.99.",
     h1: "Concreter SWMS Generator",
     intro:
-      "Concrete work involves heavy machinery, chemical exposure, and high-risk activities like tilt-up panel work. Our AI generates concreting-specific SWMS that cover formwork, pouring, pumping, and finishing.",
+      "Concrete work involves heavy machinery, chemical exposure, and high-risk activities like tilt-up panel work. We generate concreting-specific SWMS that cover formwork, pouring, pumping, and finishing.",
     commonHazards: [
       "Concrete burns from wet concrete",
       "Silica dust exposure from cutting",
@@ -293,7 +293,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional painting SWMS in 60 seconds. Covers lead paint, working at heights, spray painting, scaffolding. From $7.99.",
     h1: "Painter SWMS Generator",
     intro:
-      "Painting work often involves heights, chemical exposure, and potential lead paint hazards in older buildings. Our AI generates painting-specific SWMS with controls for scaffolding, spray painting ventilation, and hazardous substance handling.",
+      "Painting work often involves heights, chemical exposure, and potential lead paint hazards in older buildings. We generate painting-specific SWMS with controls for scaffolding, spray painting ventilation, and hazardous substance handling.",
     commonHazards: [
       "Falls from ladders, scaffolds, and EWPs",
       "Lead paint exposure in pre-1970 buildings",
@@ -319,7 +319,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional welding SWMS in 60 seconds. Covers MIG, TIG, stick welding, hot work permits, confined spaces. From $7.99.",
     h1: "Welder SWMS Generator",
     intro:
-      "Welding involves fire risks, toxic fumes, UV radiation, and often confined space work. Our AI generates welding-specific SWMS with hot work permit requirements, ventilation controls, and fire watch procedures.",
+      "Welding involves fire risks, toxic fumes, UV radiation, and often confined space work. We generate welding-specific SWMS with hot work permit requirements, ventilation controls, and fire watch procedures.",
     commonHazards: [
       "Burns from sparks and molten metal",
       "UV radiation (arc eye)",
@@ -345,7 +345,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional demolition SWMS in 60 seconds. Covers structural demolition, asbestos, plant operation. From $7.99.",
     h1: "Demolition SWMS Generator",
     intro:
-      "Demolition is one of the highest-risk construction activities. Our AI generates demolition-specific SWMS covering structural stability assessments, asbestos considerations, exclusion zones, and heavy plant operations.",
+      "Demolition is one of the highest-risk construction activities. We generate demolition-specific SWMS covering structural stability assessments, asbestos considerations, exclusion zones, and heavy plant operations.",
     commonHazards: [
       "Uncontrolled structural collapse",
       "Asbestos exposure",
@@ -373,7 +373,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional scaffolding SWMS in 60 seconds. Covers erection, modification, dismantling, edge protection. From $7.99.",
     h1: "Scaffolding SWMS Generator",
     intro:
-      "Scaffolding erection and dismantling is inherently high-risk work at height. Our AI generates scaffolding-specific SWMS with proper sequence of operations, tie-off requirements, and load rating considerations.",
+      "Scaffolding erection and dismantling is inherently high-risk work at height. We generate scaffolding-specific SWMS with proper sequence of operations, tie-off requirements, and load rating considerations.",
     commonHazards: [
       "Falls during erection and dismantling",
       "Scaffold collapse from improper setup",
@@ -398,7 +398,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional excavation SWMS in 60 seconds. Covers trenching, shoring, underground services, mobile plant. From $7.99.",
     h1: "Excavation SWMS Generator",
     intro:
-      "Excavation work involves trench collapse risks, underground service strikes, and heavy mobile plant. Our AI generates excavation-specific SWMS with shoring requirements, Dial Before You Dig references, and spotter procedures.",
+      "Excavation work involves trench collapse risks, underground service strikes, and heavy mobile plant. We generate excavation-specific SWMS with shoring requirements, Dial Before You Dig references, and spotter procedures.",
     commonHazards: [
       "Trench collapse and burial",
       "Underground service strikes (gas, electrical, water)",
@@ -426,7 +426,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
       "Generate a professional confined space SWMS in 60 seconds. Covers atmospheric monitoring, rescue plans, entry permits. From $7.99.",
     h1: "Confined Space SWMS Generator",
     intro:
-      "Confined space work is among the most dangerous construction activities. Our AI generates confined space SWMS with atmospheric monitoring requirements, entry permit procedures, standby person duties, and emergency rescue plans.",
+      "Confined space work is among the most dangerous construction activities. We generate confined space SWMS with atmospheric monitoring requirements, entry permit procedures, standby person duties, and emergency rescue plans.",
     commonHazards: [
       "Oxygen depletion or enrichment",
       "Toxic gas accumulation (H2S, CO)",

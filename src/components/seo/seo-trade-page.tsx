@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { SeoTradePage } from "@/lib/constants/seo-pages";
 
 export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
@@ -88,7 +88,7 @@ export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
               &ldquo;{page.exampleJob}&rdquo;
             </p>
             <p className="text-xs text-muted mt-2">
-              The AI expands this into a full SWMS with hazards, controls, risk
+              We expand this into a full SWMS with hazards, controls, risk
               ratings, PPE, emergency procedures, and a toolbox talk script.
             </p>
           </div>
@@ -104,7 +104,7 @@ export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
                 "HRCW activity identification",
                 "Step-by-step work procedure",
                 "Hazard identification per step",
-                "5×5 risk matrix (initial & residual)",
+                "5Ã—5 risk matrix (initial & residual)",
                 "Hierarchy of controls",
                 "PPE requirements with AS/NZS standards",
                 "Emergency procedures",
@@ -133,7 +133,7 @@ export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
             Generate Your {page.trade} SWMS Now
           </h2>
           <p className="text-muted">
-            Describe your job in plain English. AI does the rest in 60 seconds.
+            Describe your job in plain English. We do the rest in 60 seconds.
           </p>
           <Link
             href="/job"

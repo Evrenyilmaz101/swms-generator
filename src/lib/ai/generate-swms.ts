@@ -1,4 +1,4 @@
-// Claude API integration for SWMS generation
+﻿// Claude API integration for SWMS generation
 // Handles: prompt assembly, API call, response parsing, validation, and retry
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -6,8 +6,10 @@ import { buildSwmsPrompt, buildCorrectionPrompt } from "./prompts";
 import { parseSwmsResponse, validateSwmsQuality } from "./schema";
 import type { SwmsData, AustralianState } from "@/types/swms";
 
-const MODEL = "claude-sonnet-4-20250514";
-const MAX_TOKENS = 8192;
+const MODEL = "claude-sonnet-5";
+// Sonnet 5's tokenizer produces ~30% more tokens for the same text than the
+// old Sonnet 4 — 12K keeps full-SWMS JSON output from truncating.
+const MAX_TOKENS = 12000;
 const MAX_RETRIES = 1;
 
 function getClient(): Anthropic {
@@ -82,7 +84,7 @@ export async function generateSwms(
       return {
         success: false,
         error:
-          "The AI generated an invalid response. Please try again with a different job description.",
+          "That one came out garbled on our end. Please try again with a different job description.",
         details: structuralErrors,
       };
     }
@@ -134,6 +136,9 @@ async function callClaude(system: string, user: string): Promise<string> {
   const message = await getClient().messages.create({
     model: MODEL,
     max_tokens: MAX_TOKENS,
+    // Sonnet 5 defaults to adaptive thinking when this is omitted — disabled
+    // keeps latency inside the 30s Vercel window and max_tokens purely for output
+    thinking: { type: "disabled" },
     system,
     messages: [{ role: "user", content: user }],
   });

@@ -1,5 +1,5 @@
 # Instant SWMS - Project Knowledge File
-> **Last Updated:** 2026-04-04 | **Status:** LIVE IN PRODUCTION
+> **Last Updated:** 2026-07-27 | **Status:** LIVE IN PRODUCTION (Stripe still test mode)
 > **Live URL:** https://swms-generator.vercel.app
 > **Always update this file at the end of every session.**
 
@@ -190,13 +190,14 @@ The hero section uses **absolute positioning** matching a Pencil.dev design file
 
 ---
 
-## AI Engine (Claude Sonnet 4)
+## AI Engine (Claude Sonnet 5)
 
 ### Configuration
-- Model: `claude-sonnet-4-20250514`
-- Max tokens: 8,192
+- Model: `claude-sonnet-5` (migrated Aug 2026 — `claude-sonnet-4-20250514` was retired from the API and returned 404s, which had silently broken generation in production)
+- Max tokens: 12,000 (Sonnet 5 tokenizer produces ~30% more tokens than Sonnet 4)
+- Thinking: explicitly disabled (Sonnet 5 defaults to adaptive thinking when omitted; disabled keeps latency down — generation runs ~85s)
+- vercel.json maxDuration: generate 180s, analyze-photo 60s (was 30s — would have killed Sonnet 5 generations)
 - Max retries: 1
-- Temperature: default
 
 ### Prompt Architecture (4 layers)
 1. **System prompt** - 20+ year WHS consultant persona
@@ -256,19 +257,59 @@ The hero illustration (`hero-tradie.png`) was generated externally in a caricatu
 
 ---
 
-## What's Next (TODO)
+## What's Next (TODO) — Go-To-Market
 
-1. Set up custom domain (`swmsgenerator.com.au` - needs ABN for .com.au)
-2. Switch Stripe from test to live mode
-3. Set up GitHub repo for CI/CD
-4. Add Google Analytics / PostHog tracking
-5. Test full payment flow end-to-end
-6. Mobile responsive polish on the new hero section (currently absolute-positioned for desktop)
-7. Consider expanding to full tradie business platform (invoicing, quoting, OH&S, financial)
+**User-only steps (in order):**
+1. Register ABN (free, abr.gov.au) — user's PR came through July 2026, unblocking this
+2. Buy `swmsgenerator.com.au` (needs ABN) and add it as custom domain in Vercel
+3. Complete Stripe account verification and switch to live mode:
+   - Create live products/prices in Stripe dashboard
+   - Swap env vars in Vercel: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, price IDs
+   - Create live webhook endpoint -> `/api/webhooks/stripe`, swap `STRIPE_WEBHOOK_SECRET`
+4. Enable Web Analytics in Vercel dashboard (code is already wired)
+
+**Remaining code/product work:**
+5. End-to-end live payment test with a real card (then refund)
+6. Update `NEXT_PUBLIC_SITE_URL` + metadata to custom domain once live
+7. Remove `/api/stripe-test` debug route before real launch
+8. Marketing: Google Search Console, sitemap submission, Google Ads / FB groups for tradies
+9. Consider expanding to full tradie business platform (invoicing, quoting, OH&S, financial)
+
+**Done:** GitHub repo (Evrenyilmaz101/swms-generator), legal pages, Vercel Analytics component
 
 ---
 
 ## Session History
+
+### Session 7 (Aug 2, 2026) — Full "site document" redesign + model migration
+- User redesigned the site in Claude Design; handoff bundle at `../SWMS Generator Site Redesign.zip` (README + 2 HTML prototypes = the design spec)
+- New aesthetic: industrial "site document" — paper `#F4F1E9`, ink `#1A1917`, hi-vis `--swa #F2DE1B`, safety orange `#C7480F`, hazard stripes, 2px ink borders, hard offset shadows, no border-radius; fonts Barlow Condensed / Barlow / IBM Plex Mono (via layout.tsx link tag)
+- Design system lives in globals.css: `.sw-btn`, `.sw-btn-sm`, `.sw-btn-ink`, `.sw-ghost`, `.sw-chip-ghost`, `.sw-link`, `.sw-link-paper`, `sw*` keyframes, `.sw-ready` gating (rAF-armed hero animations), `.sw-marquee`
+- Landing page (page.tsx) rebuilt: nav w/ scroll-progress stripe, hero w/ A4 doc mock + stamps, trade ticker, live demo table (4 trades, IO-triggered typing), how-it-works, voice+photo, what-you-get, compliance (ink), pricing, FAQ (details), final CTA, footer
+- Builder rebuilt as 01 DESCRIBE (/job: TYPE/TALK/PHOTO tabs, inline Web Speech + photo scan, state chips, optional company/site) → 02 REVIEW (/review: ink generating overlay, tickable step cards, add-step form) → 03 PREVIEW (/preview: NEW ROUTE, HTML A4 page-1 render + blurred thumbs rail) → 04 DOWNLOAD (/checkout: plan cards + Stripe hosted checkout; token branch; DONE screen)
+- /details now redirects to /job (company/site folded into step 1; ABN/contact/phone/logo NO LONGER COLLECTED — PDF renders those fields empty); redeem flow pushes /job
+- Store: added `excludedSteps` (review unticks; filtered out of preview + PDF via src/lib/utils/builder-doc.ts) and `docNo` (stable SWMS-DDMM-NNN); BuilderStep type now job|review|preview|checkout; builder layout derives step from pathname
+- /download/success + legal pages restyled to paper/ink
+- **CRITICAL FIX: `claude-sonnet-4-20250514` was RETIRED from the Anthropic API (404)** — production generation had been silently broken. Migrated to `claude-sonnet-5`, thinking explicitly disabled, max_tokens 12000 (new tokenizer +30%), vercel.json maxDuration generate 180s / analyze-photo 60s. Generation now takes ~85s (was ~20s) — overlay copy paced accordingly
+- Rate limit reminder: /api/generate is 5/hour/IP — careful when testing (limiter is in-memory; dev server restart resets it)
+- Fixed hydration race: builder guards now go through `whenHydrated()` (builder-doc.ts) — mount effects previously read pre-hydration store defaults on hard reloads and wrongly redirected to /job
+- Scrubbed "AI" from all user-facing SEO copy (seo-pages.ts, seo-trade/state-page.tsx) + generation error message, per no-AI-branding rule
+- Windows note: NEVER edit source files via PowerShell Get-Content/Set-Content — PS 5.1 misreads UTF-8 as ANSI and mojibakes em-dashes; use the Edit tool or Node
+
+### Session 6b (Aug 2, 2026) — Landing page polish pass
+- CSS-only motion system in globals.css: `slam`/`rise` entrance animations with stagger delays (`d-1`..`d-7`), `float-bob` hero image, `wiggle`, `marquee-track` trades ticker, `pulse-ring` mic, `blink-dot` hazards, `lift-card` hovers, `sticker` badge, `nudge-x` CTA arrow, `hazard-tape` divider strips, yellow ::selection
+- Animations gated behind `.anim-ready` class set via requestAnimationFrame in page.tsx — content is opacity:1 by default, so a hydration/render stall can never leave the page invisible (the old Framer Motion failure mode)
+- New sections: trades marquee strip (Bangers, yellow on black) below hero; hazard-tape dividers before Features and CTA sections
+- prefers-reduced-motion disables everything
+- Deployed to production
+
+### Session 6 (July 27, 2026) — Go-to-market prep
+- User's PR (permanent residency) came through — unblocks ABN -> .com.au domain -> Stripe live
+- Built legal pages required for Stripe live approval: `/terms`, `/privacy`, `/refunds` under `src/app/(legal)/` with shared layout + `.legal-prose` styles in globals.css
+- Footer placeholder `#` links replaced with real Privacy/Terms/Refunds links
+- Added `@vercel/analytics` (`<Analytics />` in root layout) — still needs enabling in Vercel dashboard
+- Committed, pushed to GitHub, deployed to production; legal pages verified live
+- Note: dev server 404s on new routes if `.next` is stale from a prod build — delete `.next` and restart
 
 ### Session 1-2 (March 2026)
 - Built complete MVP: Next.js foundation, AI engine, PDF generation, builder UI, Stripe integration, Supabase backend, SEO pages

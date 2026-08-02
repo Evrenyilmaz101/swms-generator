@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { SeoStatePage } from "@/lib/constants/seo-pages";
 
 export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
@@ -89,7 +89,7 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
                 {
                   n: "1",
                   t: "Enter your business details",
-                  d: `Select ${page.state} as your state — the AI references the correct legislation automatically.`,
+                  d: `Select ${page.state} as your state — the correct legislation is referenced automatically.`,
                 },
                 {
                   n: "2",
@@ -98,7 +98,7 @@ export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
                 },
                 {
                   n: "3",
-                  t: "AI generates your SWMS",
+                  t: "We generate your SWMS",
                   d: `Complete SWMS with ${page.stateName}-specific legislation, risk matrix, PPE, and toolbox talk.`,
                 },
               ].map((step) => (

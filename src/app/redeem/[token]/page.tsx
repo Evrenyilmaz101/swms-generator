@@ -44,7 +44,7 @@ export default function RedeemPage() {
     // Reset builder and set the redemption token
     reset();
     setRedemptionToken(token);
-    router.push("/details");
+    router.push("/job");
   }
 
   return (

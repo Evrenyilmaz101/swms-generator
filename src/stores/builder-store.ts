@@ -35,6 +35,14 @@ interface BuilderState {
   generationError: string | null;
   setGenerationError: (error: string | null) => void;
 
+  // Steps unticked on the review screen (by step_number) — excluded from the doc
+  excludedSteps: number[];
+  toggleStepExcluded: (stepNumber: number) => void;
+
+  // Document number shown on preview + final PDF (stable per generation)
+  docNo: string | null;
+  setDocNo: (docNo: string | null) => void;
+
   // Token (for paid downloads / 3-pack redemptions)
   redemptionToken: string | null;
   setRedemptionToken: (token: string | null) => void;
@@ -100,6 +108,17 @@ export const useBuilderStore = create<BuilderState>()(
       generationError: null,
       setGenerationError: (error) => set({ generationError: error }),
 
+      excludedSteps: [],
+      toggleStepExcluded: (stepNumber) =>
+        set((state) => ({
+          excludedSteps: state.excludedSteps.includes(stepNumber)
+            ? state.excludedSteps.filter((n) => n !== stepNumber)
+            : [...state.excludedSteps, stepNumber],
+        })),
+
+      docNo: null,
+      setDocNo: (docNo) => set({ docNo }),
+
       redemptionToken: null,
       setRedemptionToken: (token) => set({ redemptionToken: token }),
 
@@ -114,6 +133,8 @@ export const useBuilderStore = create<BuilderState>()(
           validationWarnings: [],
           isGenerating: false,
           generationError: null,
+          excludedSteps: [],
+          docNo: null,
           redemptionToken: null,
         }),
     }),
@@ -136,6 +157,8 @@ export const useBuilderStore = create<BuilderState>()(
         photoHazards: state.photoHazards,
         generatedSwms: state.generatedSwms,
         complianceScore: state.complianceScore,
+        excludedSteps: state.excludedSteps,
+        docNo: state.docNo,
         redemptionToken: state.redemptionToken,
       }),
     }

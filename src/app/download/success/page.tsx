@@ -1,8 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+
+const MONO = "'IBM Plex Mono', monospace";
+const COND = "'Barlow Condensed', sans-serif";
 
 interface PaymentInfo {
   plan: string;
@@ -14,15 +17,11 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
-          <div className="text-center">
-            <svg className="w-8 h-8 text-[#78716C] animate-spin mx-auto" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-            <p className="text-[14px] text-[#78716C] mt-4">Loading...</p>
+        <Shell>
+          <div style={{ textAlign: "center", padding: "100px 0", fontFamily: MONO, fontSize: 12, letterSpacing: ".1em", color: "rgba(26,25,23,.6)" }}>
+            LOADING…
           </div>
-        </div>
+        </Shell>
       }
     >
       <SuccessContent />
@@ -42,6 +41,19 @@ function SuccessContent() {
   const [signOffUrl, setSignOffUrl] = useState<string | null>(null);
   const [signOffCode, setSignOffCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [docLabel, setDocLabel] = useState("SWMS");
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  // Survives sessionStorage cleanup so DOWNLOAD AGAIN keeps working
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const payloadRef = useRef<any>(null);
+
+  useEffect(() => {
+    const pendingSessionId = sessionStorage.getItem("pending_swms_session");
+    const stored = pendingSessionId ? sessionStorage.getItem(`swms_data_${pendingSessionId}`) : null;
+    if (stored) {
+      try { setDocLabel(JSON.parse(stored).document_reference || "SWMS"); } catch { /* keep default */ }
+    }
+  }, []);
 
   useEffect(() => {
     if (!sessionId) {
@@ -49,42 +61,27 @@ function SuccessContent() {
       setVerifying(false);
       return;
     }
-
     async function verifyPayment() {
       try {
-        const response = await fetch(
-          `/api/verify-payment?session_id=${sessionId}`
-        );
+        const response = await fetch(`/api/verify-payment?session_id=${sessionId}`);
         const data = await response.json();
-
-        if (data.success) {
-          setPaymentInfo(data.payment);
-        } else {
-          setError(
-            data.error || "Payment verification failed. Please contact support."
-          );
-        }
+        if (data.success) setPaymentInfo(data.payment);
+        else setError(data.error || "Payment verification failed. Please contact support.");
       } catch {
         setError("Unable to verify payment. Please contact support.");
       } finally {
         setVerifying(false);
       }
     }
-
     verifyPayment();
   }, [sessionId]);
 
-  // Create sign-off session
   async function createSignOff(businessName: string, jobDescription: string, state: string) {
     try {
       const res = await fetch("/api/sign/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          business_name: businessName,
-          job_description: jobDescription,
-          state: state,
-        }),
+        body: JSON.stringify({ business_name: businessName, job_description: jobDescription, state }),
       });
       const data = await res.json();
       if (data.success) {
@@ -92,48 +89,39 @@ function SuccessContent() {
         setSignOffCode(data.sign_code);
         return data.sign_code;
       }
-    } catch {
-      // Not critical
-    }
+    } catch { /* not critical */ }
     return null;
   }
 
   const handleDownload = useCallback(async () => {
     setIsDownloading(true);
-
+    setDownloadError(null);
     try {
-      const pendingSessionId = sessionStorage.getItem("pending_swms_session");
-      const dataKey = pendingSessionId
-        ? `swms_data_${pendingSessionId}`
-        : null;
-      const storedData = dataKey ? sessionStorage.getItem(dataKey) : null;
-
-      if (!storedData) {
-        setError(
-          "SWMS data not found in this browser session. If you closed the tab, please contact support with your payment confirmation."
-        );
-        return;
+      // Prefer the in-memory copy — sessionStorage may already be cleaned up
+      let swmsPayload = payloadRef.current;
+      if (!swmsPayload) {
+        const pendingSessionId = sessionStorage.getItem("pending_swms_session");
+        const storedData = pendingSessionId ? sessionStorage.getItem(`swms_data_${pendingSessionId}`) : null;
+        if (!storedData) {
+          setDownloadError("SWMS data not found in this browser session. If you closed the tab, please contact support with your payment confirmation.");
+          return;
+        }
+        swmsPayload = JSON.parse(storedData);
+        payloadRef.current = swmsPayload;
       }
-
-      const swmsPayload = JSON.parse(storedData);
 
       const response = await fetch("/api/download/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(swmsPayload),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF");
-      }
+      if (!response.ok) throw new Error("Failed to generate PDF");
 
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const businessName =
-        swmsPayload.business_name?.replace(/[^a-zA-Z0-9]/g, "_") || "SWMS";
-      a.download = `SWMS-${businessName}.pdf`;
+      a.download = `${swmsPayload.document_reference || "SWMS"}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -141,234 +129,113 @@ function SuccessContent() {
 
       setDownloaded(true);
 
-      // Create sign-off session and store data for re-download
-      const signResult = await createSignOff(
-        swmsPayload.business_name || "",
-        swmsPayload.swms_data?.scope_of_work || swmsPayload.job_description || "",
-        swmsPayload.state || ""
-      );
-
-      // Store SWMS data keyed by sign-off code for re-download later
-      if (signResult) {
-        try {
-          localStorage.setItem(`swms_doc_${signResult}`, JSON.stringify(swmsPayload));
-        } catch {
-          // localStorage full — not critical
+      if (!signOffCode) {
+        const signResult = await createSignOff(
+          swmsPayload.business_name || "",
+          swmsPayload.swms_data?.scope_of_work || swmsPayload.job_description || "",
+          swmsPayload.state || ""
+        );
+        if (signResult) {
+          try { localStorage.setItem(`swms_doc_${signResult}`, JSON.stringify(swmsPayload)); } catch { /* full — not critical */ }
         }
       }
-
-      // Clean up sessionStorage
-      if (dataKey) sessionStorage.removeItem(dataKey);
-      sessionStorage.removeItem("pending_swms_session");
+      // sessionStorage keys are left in place deliberately: they're tab-scoped
+      // anyway, and clearing them made every re-download a support ticket.
     } catch {
-      setError("Failed to generate PDF. Please try again or contact support.");
+      setDownloadError("The download hiccupped. Give it another go — your payment is safe.");
     } finally {
       setIsDownloading(false);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signOffCode]);
 
-  // Loading
   if (verifying) {
     return (
       <Shell>
-        <div className="flex flex-col items-center justify-center py-20">
-          <svg className="w-8 h-8 text-[#78716C] animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-[14px] text-[#78716C] mt-4">Verifying your payment...</p>
+        <div style={{ textAlign: "center", padding: "100px 0", fontFamily: MONO, fontSize: 12, letterSpacing: ".1em", color: "rgba(26,25,23,.6)" }}>
+          ▶ VERIFYING YOUR PAYMENT…
         </div>
       </Shell>
     );
   }
 
-  // Error
   if (error) {
     return (
       <Shell>
-        <div className="max-w-lg mx-auto py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
-          </div>
-          <h1 className="text-[24px] font-bold text-[#0C0A09]">Something went wrong</h1>
-          <p className="text-[15px] text-[#78716C] mt-2">{error}</p>
-          <div className="mt-6 space-y-3">
-            <button
-              onClick={() => (window.location.href = "/")}
-              className="w-full h-11 rounded-[10px] bg-[#0C0A09] text-white text-[14px] font-semibold hover:bg-[#1C1917] transition-colors"
-            >
-              Back to Home
-            </button>
-            <p className="text-[12px] text-[#A8A29E]">
-              Need help? Email <a href="mailto:support@swmsgenerator.com.au" className="underline">support@swmsgenerator.com.au</a>
-            </p>
-          </div>
+        <div style={{ maxWidth: 560, margin: "0 auto", padding: "80px 0", textAlign: "center" }}>
+          <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".14em", color: "var(--sorange)", marginBottom: 14 }}>⚠ SOMETHING WENT SIDEWAYS</div>
+          <h1 style={{ margin: "0 0 16px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(36px,4.5vw,52px)", lineHeight: 0.95, textTransform: "uppercase" }}>Hold up.</h1>
+          <p style={{ margin: "0 0 30px", fontSize: 16, color: "rgba(26,25,23,.72)" }}>{error}</p>
+          <Link href="/" className="sw-ghost" style={{ padding: "13px 24px", fontSize: 17 }}>BACK TO HOME</Link>
+          <p style={{ marginTop: 22, fontFamily: MONO, fontSize: 11, letterSpacing: ".05em", color: "rgba(26,25,23,.5)" }}>
+            NEED A HAND? <a href="mailto:support@swmsgenerator.com.au" style={{ color: "var(--ink)" }}>SUPPORT@SWMSGENERATOR.COM.AU</a>
+          </p>
         </div>
       </Shell>
     );
   }
 
-  // Success
   return (
     <Shell>
-      <div className="max-w-[560px] mx-auto py-12 sm:py-20">
-        <div className="text-center">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-            <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-[32px] font-bold text-[#0C0A09] tracking-[-0.03em] mt-6">
-            Payment successful
-          </h1>
-          <p className="text-[17px] text-[#78716C] mt-2">
-            Your SWMS is ready to download.
-          </p>
-        </div>
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "64px 0", textAlign: "center" }}>
+        <div style={{ width: 88, height: 88, margin: "0 auto 28px", border: "2px solid var(--ink)", background: "var(--swa)", boxShadow: "7px 7px 0 var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 700 }}>✓</div>
+        <h1 style={{ margin: "0 0 12px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(48px,5.4vw,72px)", lineHeight: 0.95, textTransform: "uppercase" }}>Done. Go build.</h1>
+        <p style={{ margin: "0 0 34px", fontSize: 16.5, color: "rgba(26,25,23,.72)" }}>Payment sorted — your SWMS is ready, and a receipt&apos;s on its way to your inbox.</p>
 
-        {/* Payment info */}
         {paymentInfo && (
-          <div className="mt-8 bg-white rounded-2xl border border-[#E7E5E4] p-5 space-y-2">
-            <div className="flex justify-between text-[14px]">
-              <span className="text-[#78716C]">Plan</span>
-              <span className="font-semibold text-[#0C0A09]">
-                {paymentInfo.plan === "single" ? "Single SWMS" : "SWMS 3-Pack"}
-              </span>
-            </div>
-            <div className="flex justify-between text-[14px]">
-              <span className="text-[#78716C]">Amount</span>
-              <span className="font-semibold text-[#0C0A09]">
-                ${(paymentInfo.amount / 100).toFixed(2)} AUD
-              </span>
-            </div>
+          <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 8, marginBottom: 22, fontFamily: MONO, fontSize: 12, textAlign: "left" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "rgba(26,25,23,.55)" }}>PLAN</span><span style={{ fontWeight: 600 }}>{paymentInfo.plan === "single" ? "SINGLE SWMS" : "3-PACK"}</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "rgba(26,25,23,.55)" }}>AMOUNT</span><span style={{ fontWeight: 600 }}>${(paymentInfo.amount / 100).toFixed(2)} AUD</span></div>
             {paymentInfo.email && (
-              <div className="flex justify-between text-[14px]">
-                <span className="text-[#78716C]">Receipt sent to</span>
-                <span className="font-semibold text-[#0C0A09]">{paymentInfo.email}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}><span style={{ color: "rgba(26,25,23,.55)" }}>RECEIPT TO</span><span style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>{paymentInfo.email.toUpperCase()}</span></div>
+            )}
+            {paymentInfo.plan !== "single" && (
+              <div style={{ borderTop: "1px solid rgba(26,25,23,.2)", paddingTop: 8, color: "rgba(26,25,23,.6)", letterSpacing: ".04em" }}>
+                2 TOKENS LEFT ON THIS PACK — LINK&apos;S IN YOUR EMAIL, NO ACCOUNT NEEDED
               </div>
             )}
           </div>
         )}
 
-        {/* Download button */}
-        {!downloaded ? (
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="mt-6 w-full flex items-center justify-center gap-2 px-8 py-4 bg-[#0C0A09] text-white text-[16px] font-semibold rounded-xl hover:bg-[#1C1917] transition-colors disabled:opacity-70"
-          >
-            {isDownloading ? (
-              <>
-                <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Generating PDF...
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-                Download Your SWMS
-              </>
-            )}
+        <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, marginBottom: 22, flexWrap: "wrap" }}>
+          <div style={{ textAlign: "left" }}>
+            <div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 600 }}>{docLabel}.pdf</div>
+            <div style={{ fontFamily: MONO, fontSize: 11, color: "rgba(26,25,23,.55)", marginTop: 3 }}>A4 · PRINT-READY · SIGN-OFF SHEET INCLUDED</div>
+          </div>
+          <button onClick={handleDownload} disabled={isDownloading} className="sw-btn-ink" style={{ padding: "13px 24px", fontSize: 18, boxShadow: "5px 5px 0 rgba(26,25,23,.3)" }}>
+            {isDownloading ? "BUILDING PDF…" : downloaded ? "DOWNLOAD AGAIN ↓" : "DOWNLOAD PDF ↓"}
           </button>
-        ) : (
-          <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <p className="text-[14px] font-semibold text-green-700">✓ Download started! Check your downloads folder.</p>
-            <button
-              onClick={handleDownload}
-              className="mt-2 text-[13px] font-medium text-green-700 underline"
-            >
-              Download again
-            </button>
+        </div>
+        {downloadError && (
+          <div style={{ fontFamily: MONO, fontSize: 12, color: "var(--sorange)", marginBottom: 22, textAlign: "left" }}>
+            {downloadError.toUpperCase()}
           </div>
         )}
 
-        {/* Sign-off sharing section */}
         {signOffUrl && (
-          <div className="mt-8 bg-white rounded-2xl border border-[#E7E5E4] p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <svg className="w-5 h-5 text-[#0C0A09]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-              </svg>
-              <h2 className="text-[16px] font-bold text-[#0C0A09]">
-                Get your crew to sign off
-              </h2>
-            </div>
-            <p className="text-[14px] text-[#78716C] leading-relaxed mb-4">
-              Share this link with your workers. They can sign off on their phones — no printing needed.
-            </p>
-
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex-1 bg-[#FAFAF9] border border-[#E7E5E4] rounded-lg px-3 py-2.5 text-[13px] text-[#0C0A09] font-mono truncate">
-                {signOffUrl}
-              </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(signOffUrl);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                className="shrink-0 px-4 py-2.5 bg-[#0C0A09] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1C1917] transition-colors"
-              >
-                {copied ? "Copied!" : "Copy"}
+          <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "18px 22px", marginBottom: 22, textAlign: "left" }}>
+            <div style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 10 }}>DIGITAL SIGN-OFF — SEND TO THE CREW</div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+              <div style={{ flex: 1, minWidth: 200, fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{signOffUrl}</div>
+              <button onClick={() => { navigator.clipboard.writeText(signOffUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="sw-chip-ghost" style={{ padding: "8px 14px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em" }}>
+                {copied ? "COPIED ✓" : "COPY LINK"}
               </button>
             </div>
-
-            <div className="flex items-center gap-2">
-              <a
-                href={`sms:?body=Sign off on the SWMS before you get to site: ${signOffUrl}`}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E7E5E4] rounded-lg text-[13px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                Text
-              </a>
-              <a
-                href={`https://wa.me/?text=Sign off on the SWMS before you get to site: ${encodeURIComponent(signOffUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E7E5E4] rounded-lg text-[13px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                WhatsApp
-              </a>
-              <a
-                href={`mailto:?subject=SWMS Sign-Off Required&body=Please sign off on the SWMS before arriving on site: ${signOffUrl}`}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E7E5E4] rounded-lg text-[13px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                Email
-              </a>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+              <a href={`sms:?body=Sign off on the SWMS before you get to site: ${signOffUrl}`} className="sw-chip-ghost" style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>TEXT</a>
+              <a href={`https://wa.me/?text=${encodeURIComponent(`Sign off on the SWMS before you get to site: ${signOffUrl}`)}`} target="_blank" rel="noopener noreferrer" className="sw-chip-ghost" style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>WHATSAPP</a>
+              <a href={`mailto:?subject=SWMS Sign-Off Required&body=Please sign off on the SWMS before arriving on site: ${signOffUrl}`} className="sw-chip-ghost" style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>EMAIL</a>
             </div>
-
-            <p className="text-[12px] text-[#A8A29E] mt-4 text-center">
-              Sign-off code: <span className="font-mono font-semibold">{signOffCode}</span> · Valid for 12 months
-            </p>
-
-            <Link
-              href={`/documents/${signOffCode}`}
-              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 border border-[#E7E5E4] rounded-xl text-[14px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
-              </svg>
-              Manage SWMS & track signatures →
-            </Link>
+            <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.5)" }}>
+              CODE: {signOffCode} · VALID 12 MONTHS ·{" "}
+              <Link href={`/documents/${signOffCode}`} style={{ color: "var(--ink)" }}>TRACK SIGNATURES →</Link>
+            </div>
           </div>
         )}
 
-        {/* Create another */}
-        <div className="text-center mt-8 pt-6 border-t border-[#E7E5E4]">
-          <p className="text-[14px] text-[#78716C] mb-3">
-            Need another SWMS for a different job?
-          </p>
-          <Link
-            href="/job"
-            className="text-[14px] font-semibold text-[#0C0A09] hover:underline"
-          >
-            Create Another SWMS →
-          </Link>
+        <div style={{ display: "flex", justifyContent: "center", gap: 18, flexWrap: "wrap" }}>
+          <Link href="/job" className="sw-ghost" style={{ padding: "13px 24px", fontSize: 17 }}>START ANOTHER SWMS</Link>
+          <Link href="/" style={{ display: "inline-flex", alignItems: "center", padding: "13px 10px", textDecoration: "none", fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".1em", color: "var(--ink)" }}>BACK TO HOME →</Link>
         </div>
       </div>
     </Shell>
@@ -377,20 +244,16 @@ function SuccessContent() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#FAFAF9]">
-      <header className="bg-[#FAFAF9] border-b border-[#E7E5E4]">
-        <div className="max-w-lg mx-auto px-5 h-14 flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#0C0A09] flex items-center justify-center">
-              <span className="text-[13px] font-extrabold text-[#FFD600]">S</span>
-            </div>
-            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">Instant SWMS</span>
+    <div style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", fontFamily: "var(--f-body)" }}>
+      <div style={{ background: "var(--paper)", borderBottom: "2px solid var(--ink)" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto", padding: "10px 28px", display: "flex", alignItems: "center" }}>
+          <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 25, height: 25, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 5px, var(--swa) 5px 10px)" }} />
+            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>INSTANT SWMS</div>
           </Link>
         </div>
-      </header>
-      <main className="px-5">
-        {children}
-      </main>
+      </div>
+      <main style={{ padding: "0 28px" }}>{children}</main>
     </div>
   );
 }
