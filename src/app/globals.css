@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme inline {
   --color-primary: #1e293b;
@@ -73,7 +73,7 @@ body {
   );
 }
 
-/* 3D card effect — shadow on bottom-right, pops up on hover */
+/* 3D card effect â€” shadow on bottom-right, pops up on hover */
 .card-3d {
   box-shadow:
     6px 6px 0 rgba(0,0,0,0.5),
@@ -168,4 +168,140 @@ body {
 }
 .legal-prose strong {
   color: #fff;
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â• Landing page motion & texture â•â•â•â•â•â•â•â•â•â•â• */
+
+::selection {
+  background: var(--c-yellow);
+  color: #0c0c0c;
+}
+
+/* Hazard tape divider strip */
+.hazard-tape {
+  height: 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #0c0c0c 0px,
+    #0c0c0c 18px,
+    var(--c-yellow) 18px,
+    var(--c-yellow) 36px
+  );
+}
+
+/* Stamp slam-in for hero headline */
+@keyframes slam-in {
+  0%   { opacity: 0; transform: scale(1.7) rotate(-4deg); }
+  60%  { opacity: 1; transform: scale(0.96) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.slam { opacity: 1; }
+.anim-ready .slam {
+  opacity: 0;
+  animation: slam-in 0.45s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+/* Gentle rise for secondary hero content */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rise { opacity: 1; }
+.anim-ready .rise {
+  opacity: 0;
+  animation: rise-in 0.55s ease-out forwards;
+}
+
+/* Stagger delays */
+.d-1 { animation-delay: 0.05s; }
+.d-2 { animation-delay: 0.18s; }
+.d-3 { animation-delay: 0.32s; }
+.d-4 { animation-delay: 0.45s; }
+.d-5 { animation-delay: 0.58s; }
+.d-6 { animation-delay: 0.72s; }
+.d-7 { animation-delay: 0.85s; }
+
+/* Floating bob for hero illustration */
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+.float-bob {
+  animation: float-bob 5s ease-in-out infinite;
+}
+
+/* Wiggle for the "NO STUFFING AROUND!" scribble */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-22deg); }
+  50%      { transform: rotate(-18deg); }
+}
+.wiggle {
+  animation: wiggle 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Marquee ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 22s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Pulsing ring behind mic icon */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(255,214,0,0.45); }
+  70%  { box-shadow: 0 0 0 16px rgba(255,214,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,214,0,0); }
+}
+.pulse-ring {
+  animation: pulse-ring 2.2s ease-out infinite;
+}
+
+/* Blinking hazard dots */
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+.blink-dot { animation: blink-dot 1.6s ease-in-out infinite; }
+.blink-dot:nth-child(2) { animation-delay: 0.4s; }
+
+/* Lift + tilt hover for content cards */
+.lift-card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.lift-card:hover {
+  transform: translateY(-6px) rotate(-0.5deg);
+}
+
+/* Sticker: rotated badge that straightens on hover */
+.sticker {
+  transform: rotate(-3deg);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sticker:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+
+/* CTA arrow nudge */
+@keyframes nudge-x {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(5px); }
+}
+.nudge-x { animation: nudge-x 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-ready .slam, .anim-ready .rise {
+    animation: none;
+    opacity: 1;
+  }
+  .float-bob, .wiggle, .marquee-track, .pulse-ring, .blink-dot, .nudge-x {
+    animation: none;
+  }
 }

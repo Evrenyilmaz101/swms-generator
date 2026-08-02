@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const fadeIn = {
@@ -18,8 +19,16 @@ const stagger = {
 };
 
 export default function Home() {
+  // Entrance animations only arm once the page is actually painting —
+  // without this, any hydration/render hiccup leaves animated content invisible.
+  const [animReady, setAnimReady] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setAnimReady(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--c-dark)] overflow-x-hidden" style={{ fontFamily: "var(--font-body)" }}>
+    <div className={`min-h-screen flex flex-col bg-[var(--c-dark)] overflow-x-hidden ${animReady ? "anim-ready" : ""}`} style={{ fontFamily: "var(--font-body)" }}>
 
       {/* ═══════════ NAV ═══════════ */}
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[var(--c-dark)]/80 border-b border-white/[0.04]">
@@ -59,25 +68,25 @@ export default function Home() {
 
           {/* Headline group — scaled for mobile */}
           <div className="relative mt-3">
-            <span className="block" style={{ fontFamily: "'Anton'", fontSize: "clamp(36px, 10vw, 56px)", lineHeight: 1.15, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>STILL DOING</span>
-            <span className="block" style={{ fontFamily: "'Bangers'", fontSize: "clamp(72px, 22vw, 130px)", lineHeight: 0.85, letterSpacing: 4, color: "#c50b0b", WebkitTextStroke: "1px #000", textShadow: "20px 20px 8px rgba(0,0,0,0.5)", marginLeft: "clamp(20px, 6vw, 60px)" }}>SWMS</span>
-            <span className="block" style={{ fontFamily: "'Anton'", fontSize: "clamp(36px, 10vw, 56px)", lineHeight: 1.15, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>BY HAND?</span>
+            <span className="block slam d-1" style={{ fontFamily: "'Anton'", fontSize: "clamp(36px, 10vw, 56px)", lineHeight: 1.15, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>STILL DOING</span>
+            <span className="block slam d-2" style={{ fontFamily: "'Bangers'", fontSize: "clamp(72px, 22vw, 130px)", lineHeight: 0.85, letterSpacing: 4, color: "#c50b0b", WebkitTextStroke: "1px #000", textShadow: "20px 20px 8px rgba(0,0,0,0.5)", marginLeft: "clamp(20px, 6vw, 60px)" }}>SWMS</span>
+            <span className="block slam d-3" style={{ fontFamily: "'Anton'", fontSize: "clamp(36px, 10vw, 56px)", lineHeight: 1.15, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>BY HAND?</span>
           </div>
 
           {/* Yeah, nah. */}
           <div className="mt-3">
-            <span style={{ fontFamily: "'Bangers'", fontSize: "clamp(52px, 14vw, 80px)", lineHeight: 0.95, color: "#0c0c0c" }}>YEAH, NAH.</span>
+            <span className="inline-block slam d-4" style={{ fontFamily: "'Bangers'", fontSize: "clamp(52px, 14vw, 80px)", lineHeight: 0.95, color: "#0c0c0c" }}>YEAH, NAH.</span>
           </div>
 
           {/* Bullets */}
-          <div className="mt-3">
+          <div className="mt-3 rise d-5">
             {["• No templates", "• No copying", "• No Sign Up"].map((t) => (
               <p key={t} style={{ fontFamily: "'DM Sans'", fontSize: 15, color: "rgba(0,0,0,0.7)", letterSpacing: -0.5, lineHeight: 1.54 }}>{t}</p>
             ))}
           </div>
 
           {/* CTA buttons — stacked on mobile */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-5">
+          <div className="flex flex-col sm:flex-row gap-3 mt-5 rise d-6">
             <Link href="/job" className="flex items-center justify-center gap-2.5 rounded-lg card-3d-sm" style={{ padding: "16px 28px", background: "#0c0c0c", fontFamily: "'DM Sans'", fontSize: 16, fontWeight: 700, color: "#EDEAE3", boxShadow: "0 4px 16px rgba(0,0,0,0.23)" }}>
               Build Your SWMS
               <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
@@ -89,7 +98,7 @@ export default function Home() {
           </div>
 
           {/* Trust signals — wrap on mobile */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 rise d-7">
             {[
               { path: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z", text: "WHS Compliant" },
               { path: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z", text: "60 seconds flat" },
@@ -120,25 +129,25 @@ export default function Home() {
 
             {/* Headline group */}
             <div className="relative flex flex-col justify-between" style={{ width: 446, height: 245, marginTop: 10 }}>
-              <span style={{ fontFamily: "'Anton'", fontSize: 64, lineHeight: 1.19, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>STILL DOING</span>
-              <span className="absolute" style={{ fontFamily: "'Bangers'", fontSize: 150, lineHeight: 0.9, letterSpacing: 4, color: "#c50b0b", WebkitTextStroke: "1px #000", textShadow: "42px 41px 10px rgba(0,0,0,0.5)", left: 95, top: 44, width: 360 }}>SWMS</span>
-              <span style={{ fontFamily: "'Anton'", fontSize: 64, lineHeight: 1.19, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>BY HAND?</span>
+              <span className="slam d-1" style={{ fontFamily: "'Anton'", fontSize: 64, lineHeight: 1.19, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>STILL DOING</span>
+              <span className="absolute slam d-2" style={{ fontFamily: "'Bangers'", fontSize: 150, lineHeight: 0.9, letterSpacing: 4, color: "#c50b0b", WebkitTextStroke: "1px #000", textShadow: "42px 41px 10px rgba(0,0,0,0.5)", left: 95, top: 44, width: 360 }}>SWMS</span>
+              <span className="slam d-3" style={{ fontFamily: "'Anton'", fontSize: 64, lineHeight: 1.19, color: "#0c0c0c", textShadow: "0 4px 4px rgba(0,0,0,0.25)" }}>BY HAND?</span>
             </div>
 
             {/* Yeah, nah. */}
             <div style={{ marginLeft: -7, marginTop: 17 }}>
-              <span style={{ fontFamily: "'Bangers'", fontSize: 93, lineHeight: 0.95, color: "#0c0c0c" }}>YEAH, NAH.</span>
+              <span className="inline-block slam d-4" style={{ fontFamily: "'Bangers'", fontSize: 93, lineHeight: 0.95, color: "#0c0c0c" }}>YEAH, NAH.</span>
             </div>
 
             {/* Bullets */}
-            <div style={{ marginLeft: -7, marginTop: 12 }}>
+            <div className="rise d-5" style={{ marginLeft: -7, marginTop: 12 }}>
               {["• No templates", "• No copying", "• No Sign Up"].map((t) => (
                 <p key={t} style={{ fontFamily: "'DM Sans'", fontSize: 16, color: "rgba(0,0,0,0.7)", letterSpacing: -0.5, lineHeight: 1.54 }}>{t}</p>
               ))}
             </div>
 
             {/* CTA buttons */}
-            <div className="flex items-center gap-4" style={{ marginTop: 16 }}>
+            <div className="flex items-center gap-4 rise d-6" style={{ marginTop: 16 }}>
               <Link href="/job" className="flex items-center gap-2.5 rounded-lg card-3d-sm" style={{ padding: "16px 32px", background: "#0c0c0c", fontFamily: "'DM Sans'", fontSize: 16, fontWeight: 700, color: "#EDEAE3", boxShadow: "0 4px 16px rgba(0,0,0,0.23)" }}>
                 Build Your SWMS
                 <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
@@ -150,7 +159,7 @@ export default function Home() {
             </div>
 
             {/* Trust signals */}
-            <div className="flex items-center gap-6" style={{ marginTop: 16, marginLeft: 3 }}>
+            <div className="flex items-center gap-6 rise d-7" style={{ marginTop: 16, marginLeft: 3 }}>
               {[
                 { path: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z", text: "WHS Compliant" },
                 { path: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z", text: "60 seconds flat" },
@@ -165,7 +174,7 @@ export default function Home() {
           </div>
 
           {/* "No Stuffing around!" — tilted, absolutely positioned */}
-          <span className="absolute z-20" style={{ fontFamily: "'Bangers'", fontSize: 29, letterSpacing: 4, lineHeight: 0.9, color: "rgba(197,11,11,0.8)", WebkitTextStroke: "1px #000", textShadow: "36px 22px 8px rgba(0,0,0,0.5)", transform: "rotate(-22deg)", left: 265, top: 460, width: 295 }}>
+          <span className="absolute z-20 wiggle" style={{ fontFamily: "'Bangers'", fontSize: 29, letterSpacing: 4, lineHeight: 0.9, color: "rgba(197,11,11,0.8)", WebkitTextStroke: "1px #000", textShadow: "36px 22px 8px rgba(0,0,0,0.5)", transform: "rotate(-22deg)", left: 265, top: 460, width: 295 }}>
             NO STUFFING AROUND!
           </span>
 
@@ -175,9 +184,25 @@ export default function Home() {
           </span>
 
           {/* Hero illustration — positioned on section, flush right edge */}
-          <img src="/images/hero-tradie.png" alt="Frustrated Australian tradie overwhelmed by SWMS paperwork" className="absolute object-contain" style={{ right: 0, top: 20, width: 811, height: 785 }} />
+          <img src="/images/hero-tradie.png" alt="Frustrated Australian tradie overwhelmed by SWMS paperwork" className="absolute object-contain float-bob" style={{ right: 0, top: 20, width: 811, height: 785 }} />
         </div>
       </section>
+
+      {/* ═══════════ TRADES MARQUEE ═══════════ */}
+      <div className="bg-[var(--c-dark)] py-4 overflow-hidden border-y border-white/[0.06]" aria-hidden="true">
+        <div className="marquee-track">
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex items-center shrink-0">
+              {["SPARKIES", "CHIPPIES", "PLUMBERS", "ROOFERS", "CONCRETERS", "SCAFFOLDERS", "PAINTERS", "WELDERS", "DEMO CREWS", "EXCAVATORS"].map((trade) => (
+                <span key={trade} className="flex items-center">
+                  <span className="text-2xl tracking-[3px] text-[var(--c-yellow)]" style={{ fontFamily: "'Bangers'" }}>{trade}</span>
+                  <span className="mx-6 text-[var(--c-orange)] text-xl">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ═══════════ HOW IT WORKS — Cream ═══════════ */}
       <section id="how" className="relative px-5 py-20 sm:py-28 bg-[var(--c-cream)]">
@@ -248,7 +273,7 @@ export default function Home() {
                 key={step.num}
                 variants={fadeIn}
                 custom={i}
-                className="bg-white p-8 sm:p-10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow"
+                className="lift-card bg-white p-8 sm:p-10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.12)]"
               >
                 <div className="w-12 h-12 bg-[var(--c-yellow)] rounded-xl flex items-center justify-center mb-6">
                   <span className="text-lg font-extrabold text-[var(--c-dark)]" style={{ fontFamily: "var(--font-display)" }}>{step.num}</span>
@@ -263,6 +288,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <div className="hazard-tape" aria-hidden="true" />
 
       {/* ═══════════ FEATURES ═══════════ */}
       <section id="features" className="relative px-5 py-20 sm:py-28 bg-[#695F5F] grain">
@@ -297,8 +324,8 @@ export default function Home() {
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             {/* Voice card */}
-            <motion.div variants={fadeIn} custom={0} className="bg-[var(--c-mid)] p-8 sm:p-10 rounded-2xl border border-white/[0.06] hover:border-[var(--c-yellow)]/20 transition-colors">
-              <div className="w-14 h-14 bg-[var(--c-yellow)] rounded-xl flex items-center justify-center mb-6">
+            <motion.div variants={fadeIn} custom={0} className="lift-card bg-[var(--c-mid)] p-8 sm:p-10 rounded-2xl border border-white/[0.06] hover:border-[var(--c-yellow)]/30">
+              <div className="pulse-ring w-14 h-14 bg-[var(--c-yellow)] rounded-xl flex items-center justify-center mb-6">
                 <svg className="w-7 h-7 text-[var(--c-dark)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
@@ -316,7 +343,7 @@ export default function Home() {
             </motion.div>
 
             {/* Photo card */}
-            <motion.div variants={fadeIn} custom={1} className="bg-[var(--c-mid)] p-8 sm:p-10 rounded-2xl border border-white/[0.06] hover:border-[var(--c-orange)]/20 transition-colors">
+            <motion.div variants={fadeIn} custom={1} className="lift-card bg-[var(--c-mid)] p-8 sm:p-10 rounded-2xl border border-white/[0.06] hover:border-[var(--c-orange)]/30">
               <div className="w-14 h-14 bg-[var(--c-orange)] rounded-xl flex items-center justify-center mb-6">
                 <svg className="w-7 h-7 text-[var(--c-dark)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -331,7 +358,7 @@ export default function Home() {
                 <p className="text-[10px] font-semibold text-[var(--c-orange)]/50 uppercase tracking-wider mb-3">Hazards detected</p>
                 {["Open trench — no barriers", "Missing edge protection at 4m", "Overhead power lines within 3m"].map((h, i) => (
                   <div key={i} className="flex items-center gap-2.5">
-                    <div className="w-1.5 h-1.5 bg-[var(--c-orange)] rounded-full shrink-0" />
+                    <div className="blink-dot w-1.5 h-1.5 bg-[var(--c-orange)] rounded-full shrink-0" style={{ animationDelay: `${i * 0.4}s` }} />
                     <span className="text-sm text-white/50">{h}</span>
                   </div>
                 ))}
@@ -374,7 +401,7 @@ export default function Home() {
             className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto"
           >
             {/* Single */}
-            <motion.div variants={fadeIn} custom={0} className="bg-[var(--c-mid)] p-8 rounded-2xl border border-white/[0.06]">
+            <motion.div variants={fadeIn} custom={0} className="lift-card bg-[var(--c-mid)] p-8 rounded-2xl border border-white/[0.06]">
               <p className="text-sm font-semibold text-[var(--c-text-dim)]">Single SWMS</p>
               <div className="flex items-end gap-1 mt-4">
                 <span className="text-5xl font-extrabold text-white" style={{ fontFamily: "var(--font-display)" }}>$7.99</span>
@@ -403,7 +430,7 @@ export default function Home() {
             </motion.div>
 
             {/* 3-Pack */}
-            <motion.div variants={fadeIn} custom={1} className="relative bg-[var(--c-mid)] rounded-2xl border-2 border-[var(--c-yellow)] overflow-hidden">
+            <motion.div variants={fadeIn} custom={1} className="lift-card relative bg-[var(--c-mid)] rounded-2xl border-2 border-[var(--c-yellow)] overflow-hidden shadow-[0_0_60px_rgba(255,214,0,0.12)]">
               <div className="bg-[var(--c-yellow)] py-2 text-center">
                 <span className="text-[11px] font-bold text-[var(--c-dark)] uppercase tracking-[0.15em]">Best Value</span>
               </div>
@@ -413,8 +440,8 @@ export default function Home() {
                   <span className="text-5xl font-extrabold text-white" style={{ fontFamily: "var(--font-display)" }}>$19.99</span>
                   <span className="text-[var(--c-text-dim)] mb-1.5 ml-1">3 SWMS</span>
                 </div>
-                <div className="inline-flex mt-3 px-3 py-1 rounded-full bg-[var(--c-yellow)]/10">
-                  <span className="text-xs font-semibold text-[var(--c-yellow)]">Save $3.98 vs buying singles</span>
+                <div className="sticker inline-flex mt-3 px-3 py-1.5 rounded-md bg-[var(--c-yellow)]" style={{ boxShadow: "2px 2px 0 rgba(0,0,0,0.4)" }}>
+                  <span className="text-xs font-bold text-[var(--c-dark)]" style={{ fontFamily: "'Bangers'", letterSpacing: 1.5, fontSize: 14 }}>SAVE $3.98 VS SINGLES</span>
                 </div>
                 <div className="w-full h-px bg-white/[0.06] my-6" />
                 <div className="space-y-3.5">
@@ -438,6 +465,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <div className="hazard-tape" aria-hidden="true" />
 
       {/* ═══════════ CTA — Yellow ═══════════ */}
       <section className="relative px-5 py-20 sm:py-28 bg-[var(--c-yellow)] overflow-hidden">
@@ -475,7 +504,7 @@ export default function Home() {
               className="group inline-flex items-center gap-3 bg-[var(--c-dark)] text-[var(--c-yellow)] font-bold px-10 py-5 text-lg rounded-lg card-3d-sm"
             >
               Build Your SWMS Now
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="nudge-x w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </Link>
