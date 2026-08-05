@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { renderSwmsPdf } from "@/lib/pdf/render-pdf";
-import { getSessionWithSignatures } from "@/lib/supabase/sign-offs";
+import { getSessionWithSignatures, getSignOffDocument } from "@/lib/supabase/sign-offs";
 import QRCode from "qrcode";
 import type { SwmsDocument } from "@/types/swms";
 
@@ -8,24 +8,47 @@ import type { SwmsDocument } from "@/types/swms";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, ...docFields } = body;
+    const { code } = body;
+    let { ...docFields } = body;
+    delete docFields.code;
 
-    if (!code || !docFields.swms_data || !docFields.business_name) {
+    if (!code) {
       return NextResponse.json(
-        { error: "Missing sign-off code or document data" },
+        { error: "Missing sign-off code" },
         { status: 400 }
       );
     }
 
-    // Get signatures from DB
+    // Get session + signatures from DB
     const result = await getSessionWithSignatures(code);
-    const signatures = result?.signatures.map((s) => ({
+    if (!result) {
+      return NextResponse.json(
+        { error: "Sign-off code not found or expired" },
+        { status: 404 }
+      );
+    }
+
+    // No document data from the client? Use the server-stored copy —
+    // this is what makes re-downloads work from any device
+    if (!docFields.swms_data && result.session.document_id) {
+      const stored = await getSignOffDocument(result.session.document_id);
+      if (stored?.swms_data) docFields = stored;
+    }
+
+    if (!docFields.swms_data || !docFields.business_name) {
+      return NextResponse.json(
+        { error: "Document data not found for this code. Download from the original browser, or re-generate the SWMS." },
+        { status: 404 }
+      );
+    }
+
+    const signatures = result.signatures.map((s) => ({
       worker_name: s.worker_name,
       worker_role: s.worker_role,
       licence_number: s.licence_number,
       signature_base64: s.signature_base64,
       signed_at: s.signed_at,
-    })) || [];
+    }));
 
     // Generate QR code for the sign-off URL
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://swms-generator.vercel.app";

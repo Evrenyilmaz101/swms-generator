@@ -71,6 +71,8 @@ export default function CheckoutPage() {
           business_name: businessDetails.business_name.trim() || "—",
           job_description: jobDetails.job_description,
           state: businessDetails.state,
+          // Stored server-side so signed re-downloads work from any device
+          document: buildPdfPayload(),
         }),
       });
       const data = await res.json();

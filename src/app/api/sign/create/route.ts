@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSignOffSession } from "@/lib/supabase/sign-offs";
+import { createSignOffSession, storeSignOffDocument } from "@/lib/supabase/sign-offs";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { business_name, job_description, state, worker_count } = body;
+    const { business_name, job_description, state, worker_count, document } = body;
 
     if (!business_name || !job_description || !state) {
       return NextResponse.json(
@@ -13,7 +13,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Persist the full document payload when provided — makes re-downloads
+    // (with signatures) work from any device, not just the buying browser
+    let document_id: string | undefined;
+    if (document && typeof document === "object" && document.swms_data) {
+      document_id = (await storeSignOffDocument(document)) ?? undefined;
+    }
+
     const result = await createSignOffSession({
+      document_id,
       business_name,
       job_description,
       state,

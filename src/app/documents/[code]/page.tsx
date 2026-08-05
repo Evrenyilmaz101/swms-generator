@@ -69,39 +69,37 @@ export default function DocumentStatusPage() {
     setDownloading(true);
 
     try {
-      // Get stored SWMS data from sessionStorage or prompt
-      // For now, we'll call the sign/download endpoint with minimal data
-      // The tradie would need their original data — we should store it in the DB
-      // For MVP, we'll show a message that they need the original data
+      // Server-first: the document payload is stored in the DB at sign-off
+      // creation, so just the code works from any device
+      let res = await fetch("/api/sign/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
 
-      // Try localStorage first (stored by download success page)
-      let stored = localStorage.getItem(`swms_doc_${code}`);
-
-      // Fallback to sessionStorage
-      if (!stored) {
-        const pendingId = sessionStorage.getItem("pending_swms_session");
-        const dataKey = pendingId ? `swms_data_${pendingId}` : null;
-        stored = dataKey ? sessionStorage.getItem(dataKey) : null;
+      // Legacy fallback for docs created before server-side storage:
+      // retry with the payload this browser saved at purchase time
+      if (!res.ok) {
+        let stored = localStorage.getItem(`swms_doc_${code}`);
+        if (!stored) {
+          const pendingId = sessionStorage.getItem("pending_swms_session");
+          const dataKey = pendingId ? `swms_data_${pendingId}` : null;
+          stored = dataKey ? sessionStorage.getItem(dataKey) : null;
+        }
+        if (stored) {
+          res = await fetch("/api/sign/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, ...JSON.parse(stored) }),
+          });
+        }
       }
 
-      if (!stored) {
-        alert("SWMS document data not found in this browser. If you're on a different device, please download from the original browser or re-generate the SWMS.");
+      if (!res.ok) {
+        alert("SWMS document data not found for this code. If this is an older document, download from the original browser or re-generate the SWMS.");
         setDownloading(false);
         return;
       }
-
-      const swmsPayload = JSON.parse(stored);
-
-      const res = await fetch("/api/sign/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          ...swmsPayload,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to generate");
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);

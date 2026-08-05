@@ -76,12 +76,24 @@ function SuccessContent() {
     verifyPayment();
   }, [sessionId]);
 
-  async function createSignOff(businessName: string, jobDescription: string, state: string) {
+  async function createSignOff(
+    businessName: string,
+    jobDescription: string,
+    state: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    documentPayload?: any
+  ) {
     try {
       const res = await fetch("/api/sign/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ business_name: businessName, job_description: jobDescription, state }),
+        body: JSON.stringify({
+          business_name: businessName,
+          job_description: jobDescription,
+          state,
+          // Stored server-side so signed re-downloads work from any device
+          document: documentPayload,
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -133,7 +145,8 @@ function SuccessContent() {
         const signResult = await createSignOff(
           swmsPayload.business_name || "",
           swmsPayload.swms_data?.scope_of_work || swmsPayload.job_description || "",
-          swmsPayload.state || ""
+          swmsPayload.state || "",
+          swmsPayload
         );
         if (signResult) {
           try { localStorage.setItem(`swms_doc_${signResult}`, JSON.stringify(swmsPayload)); } catch { /* full — not critical */ }

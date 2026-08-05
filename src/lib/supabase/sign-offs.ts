@@ -35,6 +35,48 @@ export interface Signature {
   signed_at: string;
 }
 
+// Store the full PDF payload server-side so re-downloads work from any
+// device — without this, the document only exists in the buyer's browser
+export async function storeSignOffDocument(
+  payload: Record<string, unknown>
+): Promise<string | null> {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from("swms_documents")
+    .insert({
+      purchase_id: null,
+      job_description: String(payload.job_description || "").slice(0, 2000),
+      business_name: String(payload.business_name || "—"),
+      state: String(payload.state || ""),
+      generated_content: payload,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Failed to store sign-off document:", error);
+    return null;
+  }
+  return data.id;
+}
+
+// Fetch a stored document payload by its swms_documents id
+export async function getSignOffDocument(
+  document_id: string
+): Promise<Record<string, unknown> | null> {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from("swms_documents")
+    .select("generated_content")
+    .eq("id", document_id)
+    .single();
+
+  if (error || !data) return null;
+  return data.generated_content as Record<string, unknown>;
+}
+
 // Create a new sign-off session for a SWMS document
 export async function createSignOffSession(params: {
   document_id?: string;
