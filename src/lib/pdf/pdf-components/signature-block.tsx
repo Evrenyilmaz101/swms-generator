@@ -40,8 +40,11 @@ export function PdfSignatureBlock({
     { label: "", width: "8%" }, // Status column
   ];
 
+  // A blank sign-off block is a fixed ~230pt — keep it whole on one page.
+  // With digital signatures the block can outgrow a page, so it must wrap.
+  const breakable = (signatures?.length ?? 0) > 0;
   return (
-    <View style={styles.sectionCard}>
+    <View style={styles.sectionCard} wrap={breakable} minPresenceAhead={140}>
       {/* Header with optional QR */}
       <View style={[styles.sectionHeader, { paddingVertical: 6 }]}>
         <View>

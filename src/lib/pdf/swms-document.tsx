@@ -50,7 +50,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
 
         {/* HRCW Checklist */}
         <View style={styles.content}>
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>HIGH RISK CONSTRUCTION WORK (HRCW) — APPLICABLE CATEGORIES</Text>
               <Text style={styles.sectionHeaderNote}>Reg. 291</Text>
@@ -61,7 +61,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* Scope of Work */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>SCOPE OF WORK</Text>
             </View>
@@ -71,13 +71,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* Training & Competency */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>TRAINING, LICENCES & COMPETENCY</Text>
             </View>
             <View style={styles.sectionBody}>
               {swms_data.training_competency.map((item, i) => (
-                <View key={i} style={styles.bulletItem}>
+                <View key={i} style={styles.bulletItem} wrap={false}>
                   <Text style={styles.bullet}>▸</Text>
                   <Text style={styles.bulletText}>{item}</Text>
                 </View>
@@ -86,13 +86,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== PPE Requirements ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>PERSONAL PROTECTIVE EQUIPMENT (PPE)</Text>
             </View>
             <View style={styles.sectionBody}>
               {swms_data.ppe_requirements.map((item, i) => (
-                <View key={i} style={styles.bulletItem}>
+                <View key={i} style={styles.bulletItem} wrap={false}>
                   <Text style={styles.bullet}>▸</Text>
                   <Text style={styles.bulletText}>{item}</Text>
                 </View>
@@ -101,7 +101,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== Plant & Equipment ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>PLANT, EQUIPMENT & MATERIALS</Text>
             </View>
@@ -136,17 +136,14 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           {/* ===== Risk Matrix + Hierarchy of Controls ===== */}
           <PdfRiskMatrixLegend />
 
-          {/* ===== MAIN PROCEDURE TABLE ===== */}
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>JOB STEPS — HAZARDS, RISKS & CONTROLS</Text>
-              <Text style={styles.sectionHeaderNote}>IR = Initial Risk  |  RR = Residual Risk</Text>
-            </View>
-            <PdfProcedureTable steps={swms_data.steps} />
-          </View>
+          {/* ===== MAIN PROCEDURE TABLE =====
+              Not wrapped in sectionCard: a bordered container paints empty
+              fragments wherever the table breaks across pages. The component
+              carries its own header and row borders. */}
+          <PdfProcedureTable steps={swms_data.steps} />
 
           {/* ===== EMERGENCY PROCEDURES ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeaderEmergency}>
               <Text style={[styles.sectionHeaderText, { letterSpacing: 1 }]}>⚠ EMERGENCY PROCEDURES & CONTACTS</Text>
             </View>
@@ -157,7 +154,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
                     EVACUATION & INCIDENT RESPONSE
                   </Text>
                   {swms_data.emergency_procedures.map((proc, i) => (
-                    <View key={i} style={styles.bulletItem}>
+                    <View key={i} style={styles.bulletItem} wrap={false}>
                       <Text style={styles.bullet}>{i + 1}.</Text>
                       <Text style={styles.bulletText}>{proc}</Text>
                     </View>
@@ -179,13 +176,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== COMMUNICATION & CONSULTATION ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>COMMUNICATION & CONSULTATION</Text>
             </View>
             <View style={styles.sectionBody}>
               {swms_data.communication_consultation.map((item, i) => (
-                <View key={i} style={styles.bulletItem}>
+                <View key={i} style={styles.bulletItem} wrap={false}>
                   <Text style={styles.bullet}>▸</Text>
                   <Text style={styles.bulletText}>{item}</Text>
                 </View>
@@ -194,13 +191,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== ENVIRONMENTAL CONDITIONS ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>ENVIRONMENTAL CONDITIONS & SITE CONSIDERATIONS</Text>
             </View>
             <View style={styles.sectionBody}>
               {swms_data.environmental_conditions.map((item, i) => (
-                <View key={i} style={styles.bulletItem}>
+                <View key={i} style={styles.bulletItem} wrap={false}>
                   <Text style={styles.bullet}>▸</Text>
                   <Text style={styles.bulletText}>{item}</Text>
                 </View>
@@ -209,13 +206,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== LEGISLATION ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>LEGISLATION & STANDARDS ({doc.state})</Text>
             </View>
             <View style={styles.sectionBody}>
               {swms_data.legislation_references.map((ref, i) => (
-                <View key={i} style={styles.bulletItem}>
+                <View key={i} style={styles.bulletItem} wrap={false}>
                   <Text style={[styles.bullet, { color: COLORS.orange }]}>▸</Text>
                   <Text style={styles.bulletText}>{ref}</Text>
                 </View>
@@ -225,13 +222,13 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
 
           {/* ===== PERMIT REQUIREMENTS ===== */}
           {swms_data.permit_requirements.length > 0 && (
-            <View style={styles.sectionCard}>
+            <View style={styles.sectionCard} minPresenceAhead={70}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionHeaderText}>PERMIT-TO-WORK REQUIREMENTS</Text>
               </View>
               <View style={styles.sectionBody}>
                 {swms_data.permit_requirements.map((item, i) => (
-                  <View key={i} style={styles.bulletItem}>
+                  <View key={i} style={styles.bulletItem} wrap={false}>
                     <Text style={styles.bullet}>▸</Text>
                     <Text style={styles.bulletText}>{item}</Text>
                   </View>
@@ -241,7 +238,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           )}
 
           {/* ===== TOOLBOX TALK ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>TOOLBOX TALK — PRE-START BRIEFING</Text>
             </View>
@@ -255,7 +252,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== SWMS REVIEW & MONITORING ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>SWMS REVIEW & MONITORING</Text>
             </View>
@@ -280,7 +277,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           />
 
           {/* ===== DOCUMENT REVIEW HISTORY ===== */}
-          <View style={styles.sectionCard}>
+          <View style={styles.sectionCard} minPresenceAhead={70}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>DOCUMENT REVIEW HISTORY</Text>
             </View>
