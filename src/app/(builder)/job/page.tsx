@@ -53,6 +53,10 @@ export default function JobPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recogRef = useRef<any>(null);
   const recTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Finalized speech accumulates here; interim text is display-only.
+  // Browsers re-send interim segments (and Android re-sends cumulative
+  // finals), so naive concatenation duplicates words.
+  const finalRef = useRef("");
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,9 +69,20 @@ export default function JobPage() {
     r.interimResults = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     r.onresult = (e: any) => {
-      let full = "";
-      for (let i = 0; i < e.results.length; i++) full += e.results[i][0].transcript;
-      setTranscript(full.trim());
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const seg = (e.results[i][0].transcript || "").trim();
+        if (!seg) continue;
+        if (e.results[i].isFinal) {
+          const acc = finalRef.current.trim();
+          if (acc.endsWith(seg)) continue;               // duplicate resend
+          if (acc && seg.startsWith(acc)) finalRef.current = seg; // cumulative resend (Android)
+          else finalRef.current = acc ? `${acc} ${seg}` : seg;
+        } else {
+          interim = seg; // latest interim only — never accumulated
+        }
+      }
+      setTranscript(`${finalRef.current} ${interim}`.trim());
     };
     r.onend = () => setRecording(false);
     recogRef.current = r;
@@ -89,7 +104,11 @@ export default function JobPage() {
     const r = recogRef.current;
     if (!r) return;
     if (recording) { r.stop(); setRecording(false); }
-    else { setTranscript(""); try { r.start(); setRecording(true); } catch { /* mid-restart */ } }
+    else {
+      finalRef.current = "";
+      setTranscript("");
+      try { r.start(); setRecording(true); } catch { /* mid-restart */ }
+    }
   };
   const useTranscript = () => {
     if (!transcript) return;
