@@ -128,6 +128,19 @@ export default function SignOffPage() {
     setState("ready");
   }
 
+  // Pass-the-phone: reset the form so the next crew member can sign
+  // on the same device without reloading
+  function nextWorker() {
+    setWorkerName("");
+    setWorkerRole("");
+    setLicenceNumber("");
+    hasDrawnRef.current = false;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setState("ready");
+  }
+
   async function handleSubmit() {
     if (!workerName.trim()) return;
     if (!hasDrawnRef.current || !canvasRef.current) return;
@@ -218,6 +231,15 @@ export default function SignOffPage() {
           <div className="mt-6 bg-[#F5F5F4] rounded-xl px-5 py-3 text-[13px] text-[#78716C]">
             {signatureCount} of {session?.worker_count} workers signed
           </div>
+          <button
+            onClick={nextWorker}
+            className="mt-8 w-full max-w-sm px-8 py-4 bg-[#0C0A09] text-white text-[16px] font-bold rounded-xl hover:bg-[#1C1917] transition-colors"
+          >
+            PASS THE PHONE — NEXT WORKER SIGNS →
+          </button>
+          <p className="text-[12px] text-[#A8A29E] mt-3">
+            Hand the phone to the next crew member, or close this page when everyone&apos;s signed.
+          </p>
         </div>
       </Shell>
     );
