@@ -88,9 +88,11 @@ function StepRow({ step, index, isLast }: { step: ProcedureStep; index: number; 
         SIDE_BORDERS,
         isLast ? { borderBottomWidth: 1, borderBottomColor: COLORS.gray200 } : {},
       ]}
-      // NOTE: no minPresenceAhead here — it forbids breaks within N pts
-      // AFTER the element, which on a breakable row forbids the row's own
-      // split and shoves it whole to the next page (the blank-tail bug)
+      // minPresenceAhead must stay SMALL here: it forbids breaks within N pts
+      // of the row's top, so a large value forbids a tall row's own split and
+      // shoves it whole to the next page (the blank-tail bug). 36pt only
+      // stops a row starting as a sub-3-line sliver at the page bottom.
+      minPresenceAhead={36}
       wrap={estimateRowHeight(step) > ROW_SPLIT_THRESHOLD}
     >
       <View style={[styles.tableCell, { width: COL.step }]}>

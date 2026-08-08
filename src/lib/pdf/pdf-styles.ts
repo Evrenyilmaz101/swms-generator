@@ -66,12 +66,14 @@ export const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontSize: 8,
     color: COLORS.gray900,
-    paddingTop: 0,
+    // paddingTop applies to every page a long document flows onto — without
+    // it, content split across pages lands hard against the paper's top edge
+    paddingTop: 24,
     paddingBottom: 40,
     paddingHorizontal: 0,
   },
 
-  // ===== PAGE HEADER (navy bar, every page) =====
+  // ===== PAGE HEADER (navy bar, page 1) =====
   pageHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -80,6 +82,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     marginBottom: 0,
+    marginTop: -24, // cancel page paddingTop so the banner stays full-bleed
   },
   pageHeaderSmall: {
     flexDirection: "row",
