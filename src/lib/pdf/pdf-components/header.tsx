@@ -3,7 +3,7 @@
 
 import React from "react";
 import { View, Text, Image } from "@react-pdf/renderer";
-import { styles, COLORS } from "../pdf-styles";
+import { styles } from "../pdf-styles";
 import type { SwmsDocument } from "@/types/swms";
 
 interface PdfHeaderProps {
@@ -18,15 +18,13 @@ export function PdfHeader({ doc, compact }: PdfHeaderProps) {
     <View style={headerStyle} fixed={!!compact}>
       {/* Left — Logo + Company */}
       <View style={styles.pageHeaderLeft}>
+        {/* No logo -> no box: a literal LOGO placeholder looks like a
+            template artifact on a paid document */}
         {doc.logo_base64 ? (
           <View style={styles.logoBox}>
             <Image src={doc.logo_base64} style={styles.logo} />
           </View>
-        ) : (
-          <View style={[styles.logoBox, { width: compact ? 24 : 40, height: compact ? 24 : 40 }]}>
-            <Text style={{ fontSize: compact ? 7 : 9, fontWeight: "bold", color: COLORS.navy }}>LOGO</Text>
-          </View>
-        )}
+        ) : null}
         <View>
           <Text style={[styles.companyName, compact ? { fontSize: 10 } : {}]}>
             {doc.business_name.toUpperCase()}

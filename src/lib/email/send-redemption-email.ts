@@ -47,7 +47,7 @@ export async function sendRedemptionEmail(params: RedemptionEmailParams) {
     <!-- Header -->
     <div style="background:#1a2332;border-radius:12px 12px 0 0;padding:24px;text-align:center;">
       <h1 style="margin:0;color:#ffffff;font-size:20px;">
-        <span style="color:#f5a623;">Instant</span> SWMS
+        SWMS <span style="color:#f5a623;">Sorted</span>
       </h1>
     </div>
 

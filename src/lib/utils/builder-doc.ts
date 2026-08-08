@@ -88,6 +88,7 @@ export function pdfPayload(opts: {
     job_description: job.job_description,
     site_address: job.site_address,
     principal_contractor: job.principal_contractor,
+    job_reference: job.job_reference,
     swms_data: docSwms(swms, excluded),
     compliance_score: complianceScore,
     document_reference: docNo,

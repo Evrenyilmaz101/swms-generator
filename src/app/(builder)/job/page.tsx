@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useBuilderStore } from "@/stores/builder-store";
+import { useBuilderStore, useRememberMeStore } from "@/stores/builder-store";
+import { whenHydrated } from "@/lib/utils/builder-doc";
 import type { AustralianState } from "@/types/swms";
 
 const MONO = "'IBM Plex Mono', monospace";
@@ -37,6 +38,17 @@ export default function JobPage() {
   } = useBuilderStore();
 
   useEffect(() => { setCurrentStep("job"); }, [setCurrentStep]);
+
+  // Fresh browser session with remembered company details? Restore them —
+  // the builder store is sessionStorage-scoped, remember-me is localStorage
+  useEffect(() => {
+    return whenHydrated(() => {
+      const b = useBuilderStore.getState().businessDetails;
+      const saved = useRememberMeStore.getState().savedDetails;
+      const empty = !b.business_name && !b.abn && !b.contact_name && !b.logo_base64;
+      if (empty && saved) useBuilderStore.getState().setBusinessDetails(saved);
+    });
+  }, []);
 
   const [mode, setMode] = useState<Mode>("type");
   const text = jobDetails.job_description;

@@ -52,7 +52,7 @@ export default function RedeemPage() {
       <header className="bg-primary text-white py-3 px-4">
         <div className="max-w-2xl mx-auto">
           <a href="/" className="text-lg font-bold">
-            <span className="text-accent">Instant</span> SWMS
+            SWMS <span className="text-accent">Sorted</span>
           </a>
         </div>
       </header>

@@ -122,10 +122,12 @@ export const useBuilderStore = create<BuilderState>()(
       redemptionToken: null,
       setRedemptionToken: (token) => set({ redemptionToken: token }),
 
+      // Company identity (name, ABN, contact, logo…) deliberately survives:
+      // reset() runs on "start another SWMS" and the 3-pack redeem flow —
+      // exactly the repeat customers who shouldn't retype their letterhead
       reset: () =>
         set({
           currentStep: "job",
-          businessDetails: DEFAULT_BUSINESS_DETAILS,
           jobDetails: DEFAULT_JOB_DETAILS,
           photoHazards: [],
           generatedSwms: null,
