@@ -160,7 +160,7 @@ export default function Home() {
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "10px 32px", minHeight: 46, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "10px 24px" }}>
           <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 11 }}>
             <div style={{ width: 28, height: 28, border: "2px solid var(--ink)", background: STRIPE(6) }} />
-            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 23, letterSpacing: ".05em", color: "var(--ink)" }}>INSTANT SWMS</div>
+            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 23, letterSpacing: ".05em", color: "var(--ink)" }}>SWMS SORTED</div>
           </Link>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px 28px", fontFamily: MONO, fontSize: 12, fontWeight: 500, letterSpacing: ".08em" }}>
             <a href="#how" className="sw-link">HOW IT WORKS</a>
@@ -267,7 +267,7 @@ export default function Home() {
                 ))}
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontFamily: MONO, fontSize: 5.5, color: "rgba(26,25,23,.5)" }}>
-                <span>INSTANT SWMS · GENERATED 02/08/2026</span><span>PAGE 1 OF 6</span>
+                <span>SWMS SORTED · GENERATED 02/08/2026</span><span>PAGE 1 OF 6</span>
               </div>
             </div>
             <div className="swHeroStamp" style={{ position: "absolute", top: 44, right: -2, transform: "rotate(-9deg)", border: "3px solid var(--sorange)", color: "var(--sorange)", padding: "8px 14px", fontFamily: MONO, fontWeight: 600, fontSize: 13, letterSpacing: ".14em", background: "rgba(253,252,247,.85)" }}>GENERATED IN 47 SEC</div>
@@ -631,17 +631,17 @@ export default function Home() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 32, flexWrap: "wrap", marginBottom: 44 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
               <div style={{ width: 28, height: 28, border: "2px solid var(--paper)", background: STRIPE(6) }} />
-              <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 23, letterSpacing: ".05em" }}>INSTANT SWMS</div>
+              <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 23, letterSpacing: ".05em" }}>SWMS SORTED</div>
             </div>
             <div style={{ display: "flex", gap: 26, flexWrap: "wrap", fontFamily: MONO, fontSize: 12, letterSpacing: ".08em" }}>
               <Link href="/privacy" className="sw-link-paper">PRIVACY</Link>
               <Link href="/terms" className="sw-link-paper">TERMS</Link>
               <Link href="/refunds" className="sw-link-paper">REFUNDS</Link>
-              <a href="mailto:support@swmsgenerator.com.au" className="sw-link-paper">CONTACT</a>
+              <a href="mailto:support@swmssorted.com.au" className="sw-link-paper">CONTACT</a>
             </div>
           </div>
           <div style={{ borderTop: "1px solid rgba(244,241,233,.25)", paddingTop: 22, display: "flex", justifyContent: "space-between", gap: 24, flexWrap: "wrap", fontFamily: MONO, fontSize: 11, letterSpacing: ".05em", color: "rgba(244,241,233,.55)" }}>
-            <span>© {new Date().getFullYear()} INSTANT SWMS · BUILT IN AUSTRALIA</span>
+            <span>© {new Date().getFullYear()} SWMS SORTED · BUILT IN AUSTRALIA</span>
             <span>SWMS DOCUMENTS MUST BE REVIEWED BY A COMPETENT PERSON BEFORE USE ON SITE.</span>
           </div>
         </div>

@@ -30,7 +30,7 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
       title={`SWMS - ${doc.business_name} - ${doc.document_reference}`}
       author={doc.business_name}
       subject="Safe Work Method Statement"
-      creator="Instant SWMS"
+      creator="SWMS Sorted"
     >
       <Page size="A4" style={styles.page}>
         {/* Watermark overlay (preview mode only) */}

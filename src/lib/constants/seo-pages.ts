@@ -155,7 +155,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-electrician",
     trade: "Electrician",
     tradePlural: "Electricians",
-    title: "SWMS for Electricians | Instant SWMS",
+    title: "SWMS for Electricians | SWMS Sorted",
     metaDescription:
       "Generate a professional electrician SWMS in 60 seconds. Covers electrical isolation, live work, switchboard installation, cable pulling. From $7.99.",
     h1: "Electrician SWMS Generator",
@@ -182,7 +182,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-plumber",
     trade: "Plumber",
     tradePlural: "Plumbers",
-    title: "SWMS for Plumbers | Instant SWMS",
+    title: "SWMS for Plumbers | SWMS Sorted",
     metaDescription:
       "Generate a professional plumbing SWMS in 60 seconds. Covers trenching, hot work, confined spaces, drainage. From $7.99.",
     h1: "Plumber SWMS Generator",
@@ -209,7 +209,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-builder",
     trade: "Builder",
     tradePlural: "Builders",
-    title: "SWMS for Builders | Instant SWMS",
+    title: "SWMS for Builders | SWMS Sorted",
     metaDescription:
       "Generate a professional builder SWMS in 60 seconds. Covers framing, roofing, demolition, concrete work. From $7.99.",
     h1: "Builder SWMS Generator",
@@ -237,7 +237,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-roofer",
     trade: "Roofer",
     tradePlural: "Roofers",
-    title: "SWMS for Roofers | Instant SWMS",
+    title: "SWMS for Roofers | SWMS Sorted",
     metaDescription:
       "Generate a professional roofing SWMS in 60 seconds. Covers working at heights, fragile roofs, metal roofing, guttering. From $7.99.",
     h1: "Roofer SWMS Generator",
@@ -262,7 +262,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-concreter",
     trade: "Concreter",
     tradePlural: "Concreters",
-    title: "SWMS for Concreters | Instant SWMS",
+    title: "SWMS for Concreters | SWMS Sorted",
     metaDescription:
       "Generate a professional concreting SWMS in 60 seconds. Covers tilt-up panels, formwork, concrete pumping. From $7.99.",
     h1: "Concreter SWMS Generator",
@@ -288,7 +288,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-painter",
     trade: "Painter",
     tradePlural: "Painters",
-    title: "SWMS for Painters | Instant SWMS",
+    title: "SWMS for Painters | SWMS Sorted",
     metaDescription:
       "Generate a professional painting SWMS in 60 seconds. Covers lead paint, working at heights, spray painting, scaffolding. From $7.99.",
     h1: "Painter SWMS Generator",
@@ -314,7 +314,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-welder",
     trade: "Welder",
     tradePlural: "Welders",
-    title: "SWMS for Welders | Instant SWMS",
+    title: "SWMS for Welders | SWMS Sorted",
     metaDescription:
       "Generate a professional welding SWMS in 60 seconds. Covers MIG, TIG, stick welding, hot work permits, confined spaces. From $7.99.",
     h1: "Welder SWMS Generator",
@@ -340,7 +340,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-demolition",
     trade: "Demolition Worker",
     tradePlural: "Demolition Workers",
-    title: "SWMS for Demolition | Instant SWMS",
+    title: "SWMS for Demolition | SWMS Sorted",
     metaDescription:
       "Generate a professional demolition SWMS in 60 seconds. Covers structural demolition, asbestos, plant operation. From $7.99.",
     h1: "Demolition SWMS Generator",
@@ -368,7 +368,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-scaffolding",
     trade: "Scaffolder",
     tradePlural: "Scaffolders",
-    title: "SWMS for Scaffolding | Instant SWMS",
+    title: "SWMS for Scaffolding | SWMS Sorted",
     metaDescription:
       "Generate a professional scaffolding SWMS in 60 seconds. Covers erection, modification, dismantling, edge protection. From $7.99.",
     h1: "Scaffolding SWMS Generator",
@@ -393,7 +393,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-excavation",
     trade: "Excavation Worker",
     tradePlural: "Excavation Workers",
-    title: "SWMS for Excavation | Instant SWMS",
+    title: "SWMS for Excavation | SWMS Sorted",
     metaDescription:
       "Generate a professional excavation SWMS in 60 seconds. Covers trenching, shoring, underground services, mobile plant. From $7.99.",
     h1: "Excavation SWMS Generator",
@@ -421,7 +421,7 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     slug: "swms-confined-space",
     trade: "Confined Space Worker",
     tradePlural: "Confined Space Workers",
-    title: "SWMS for Confined Spaces | Instant SWMS",
+    title: "SWMS for Confined Spaces | SWMS Sorted",
     metaDescription:
       "Generate a professional confined space SWMS in 60 seconds. Covers atmospheric monitoring, rescue plans, entry permits. From $7.99.",
     h1: "Confined Space SWMS Generator",

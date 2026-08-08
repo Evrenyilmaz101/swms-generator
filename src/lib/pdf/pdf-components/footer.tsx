@@ -25,7 +25,7 @@ export function PdfFooter({ documentReference, businessName, abn }: FooterProps)
           `Page ${pageNumber} of ${totalPages}`
         }
       />
-      <Text style={styles.footerText}>Generated via swmsgenerator.com.au</Text>
+      <Text style={styles.footerText}>Generated via swmssorted.com.au</Text>
     </View>
   );
 }

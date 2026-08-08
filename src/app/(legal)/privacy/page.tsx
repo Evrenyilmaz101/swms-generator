@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Privacy Policy for Instant SWMS.",
+  description: "Privacy Policy for SWMS Sorted.",
 };
 
 export default function PrivacyPage() {
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <p className="legal-updated">Last updated: 27 July 2026</p>
 
       <p>
-        This policy explains how Instant SWMS (&quot;we&quot;, &quot;us&quot;) collects, uses, and
+        This policy explains how SWMS Sorted (&quot;we&quot;, &quot;us&quot;) collects, uses, and
         protects your information when you use our website and document generation service. We
         handle personal information in accordance with the Privacy Act 1988 (Cth) and the
         Australian Privacy Principles.
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
       <h2>6. Your rights</h2>
       <p>
         You can request access to, correction of, or deletion of your personal information by
-        emailing <a href="mailto:support@swmsgenerator.com.au">support@swmsgenerator.com.au</a>.
+        emailing <a href="mailto:support@swmssorted.com.au">support@swmssorted.com.au</a>.
         We&apos;ll respond within a reasonable time. If you&apos;re unhappy with how we handle a
         privacy complaint, you can contact the Office of the Australian Information Commissioner
         (OAIC) at <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer">oaic.gov.au</a>.
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
       <h2>9. Contact</h2>
       <p>
         Privacy questions? Email{" "}
-        <a href="mailto:support@swmsgenerator.com.au">support@swmsgenerator.com.au</a>.
+        <a href="mailto:support@swmssorted.com.au">support@swmssorted.com.au</a>.
       </p>
     </>
   );

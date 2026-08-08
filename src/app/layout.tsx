@@ -5,8 +5,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Instant SWMS | Professional Safe Work Method Statements in 60 Seconds",
-    template: "%s | Instant SWMS",
+    default: "SWMS Sorted | Professional Safe Work Method Statements in 60 Seconds",
+    template: "%s | SWMS Sorted",
   },
   description:
     "Stop stuffing around with SWMS templates. Generate compliant Safe Work Method Statements in 60 seconds. No signup, no BS. From $7.99.",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Instant SWMS",
+    title: "SWMS Sorted",
   },
   icons: {
     apple: "/apple-touch-icon.png",

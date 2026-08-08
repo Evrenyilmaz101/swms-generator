@@ -181,7 +181,7 @@ function SuccessContent() {
           <p style={{ margin: "0 0 30px", fontSize: 16, color: "rgba(26,25,23,.72)" }}>{error}</p>
           <Link href="/" className="sw-ghost" style={{ padding: "13px 24px", fontSize: 17 }}>BACK TO HOME</Link>
           <p style={{ marginTop: 22, fontFamily: MONO, fontSize: 11, letterSpacing: ".05em", color: "rgba(26,25,23,.5)" }}>
-            NEED A HAND? <a href="mailto:support@swmsgenerator.com.au" style={{ color: "var(--ink)" }}>SUPPORT@SWMSGENERATOR.COM.AU</a>
+            NEED A HAND? <a href="mailto:support@swmssorted.com.au" style={{ color: "var(--ink)" }}>SUPPORT@SWMSSORTED.COM.AU</a>
           </p>
         </div>
       </Shell>
@@ -262,7 +262,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <div style={{ maxWidth: 640, margin: "0 auto", padding: "10px 28px", display: "flex", alignItems: "center" }}>
           <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 25, height: 25, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 5px, var(--swa) 5px 10px)" }} />
-            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>INSTANT SWMS</div>
+            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>SWMS SORTED</div>
           </Link>
         </div>
       </div>

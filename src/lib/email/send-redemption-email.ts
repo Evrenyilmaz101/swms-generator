@@ -29,7 +29,7 @@ export async function sendRedemptionEmail(params: RedemptionEmailParams) {
     (token, i) => `${siteUrl}/redeem/${token}`
   );
 
-  const fromAddress = process.env.RESEND_FROM_EMAIL?.trim() || "Instant SWMS <onboarding@resend.dev>";
+  const fromAddress = process.env.RESEND_FROM_EMAIL?.trim() || "SWMS Sorted <onboarding@resend.dev>";
 
   const { data, error } = await getResend().emails.send({
     from: fromAddress,
@@ -83,7 +83,7 @@ export async function sendRedemptionEmail(params: RedemptionEmailParams) {
 
     <!-- Footer -->
     <p style="text-align:center;color:#9ca3af;font-size:11px;margin-top:20px;">
-      Instant SWMS — Australian WHS Compliant
+      SWMS Sorted — Australian WHS Compliant
     </p>
   </div>
 </body>

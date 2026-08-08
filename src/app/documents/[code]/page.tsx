@@ -384,7 +384,7 @@ function Shell({ children }: { children: React.ReactNode }) {
             <div className="w-6 h-6 rounded-md bg-[#0C0A09] flex items-center justify-center">
               <span className="text-[13px] font-extrabold text-[#FFD600]">S</span>
             </div>
-            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">Instant SWMS</span>
+            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">SWMS Sorted</span>
           </Link>
           <Link href="/" className="text-[13px] font-medium text-[#78716C] hover:text-[#0C0A09] transition-colors">
             New SWMS

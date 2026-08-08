@@ -155,10 +155,10 @@ export default function RedeemPage() {
               <p className="text-xs text-muted">
                 Need help? Email{" "}
                 <a
-                  href="mailto:support@swmsgenerator.com.au"
+                  href="mailto:support@swmssorted.com.au"
                   className="text-accent hover:underline"
                 >
-                  support@swmsgenerator.com.au
+                  support@swmssorted.com.au
                 </a>
               </p>
             </div>

@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Instant SWMS",
-    short_name: "Instant SWMS",
+    name: "SWMS Sorted",
+    short_name: "SWMS Sorted",
     description:
       "Site-ready, WHS-compliant Safe Work Method Statements in minutes. Run toolbox talks and collect crew sign-offs from your phone.",
     start_url: "/",

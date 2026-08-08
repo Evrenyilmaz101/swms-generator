@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Refund Policy",
-  description: "Refund Policy for Instant SWMS.",
+  description: "Refund Policy for SWMS Sorted.",
 };
 
 export default function RefundsPage() {
@@ -47,7 +47,7 @@ export default function RefundsPage() {
 
       <h2>4. How to request a refund</h2>
       <p>
-        Email <a href="mailto:support@swmsgenerator.com.au">support@swmsgenerator.com.au</a>{" "}
+        Email <a href="mailto:support@swmssorted.com.au">support@swmssorted.com.au</a>{" "}
         within 30 days of purchase with the email you used at checkout and a short description of
         the problem. We&apos;ll respond within 2 business days. Approved refunds are returned to
         your original payment method via Stripe, usually within 5–10 business days.

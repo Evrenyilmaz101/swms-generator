@@ -115,7 +115,7 @@ export default function PreviewPage() {
               ))}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontFamily: MONO, fontSize: 7.5, color: "rgba(26,25,23,.5)" }}>
-              <span>INSTANT SWMS · GENERATED {new Date().toLocaleDateString("en-AU")}</span><span>PAGE 1 OF 6</span>
+              <span>SWMS SORTED · GENERATED {new Date().toLocaleDateString("en-AU")}</span><span>PAGE 1 OF 6</span>
             </div>
           </div>
         </div>

@@ -147,7 +147,7 @@ export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
       {/* Footer */}
       <footer className="bg-primary text-white/60 py-8 px-4 mt-auto">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <span>&copy; {new Date().getFullYear()} Instant SWMS.</span>
+          <span>&copy; {new Date().getFullYear()} SWMS Sorted.</span>
           <div className="flex gap-6">
             <Link href="/" className="hover:text-white transition-colors">
               Home

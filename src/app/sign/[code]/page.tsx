@@ -207,7 +207,7 @@ export default function SignOffPage() {
           <h1 className="text-[24px] font-bold text-[#0C0A09]">Can&apos;t load sign-off</h1>
           <p className="text-[15px] text-[#78716C] mt-2 max-w-sm">{errorMsg}</p>
           <Link href="/" className="mt-6 text-[14px] font-medium text-[#0C0A09] underline">
-            Go to Instant SWMS
+            Go to SWMS Sorted
           </Link>
         </div>
       </Shell>
@@ -393,7 +393,7 @@ function Shell({ children }: { children: React.ReactNode }) {
             <div className="w-6 h-6 rounded-md bg-[#0C0A09] flex items-center justify-center">
               <span className="text-[13px] font-extrabold text-[#FFD600]">S</span>
             </div>
-            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">Instant SWMS</span>
+            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">SWMS Sorted</span>
           </Link>
         </div>
       </header>

@@ -1,4 +1,4 @@
-/* Instant SWMS service worker
+/* SWMS Sorted service worker
  *
  * Strategy — deliberately conservative so it can never break the builder
  * or payment flows:

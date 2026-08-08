@@ -22,7 +22,7 @@ export default function BuilderLayout({
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "8px 28px", minHeight: 46, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "8px 20px" }}>
           <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 25, height: 25, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 5px, var(--swa) 5px 10px)" }} />
-            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>INSTANT SWMS</div>
+            <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 20, letterSpacing: ".05em", color: "var(--ink)" }}>SWMS SORTED</div>
           </Link>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {BUILDER_STEPS.map((s, i) => {

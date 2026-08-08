@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Instant SWMS.",
+  description: "Terms of Service for SWMS Sorted.",
 };
 
 export default function TermsPage() {
@@ -12,14 +12,14 @@ export default function TermsPage() {
       <p className="legal-updated">Last updated: 27 July 2026</p>
 
       <p>
-        These Terms of Service (&quot;Terms&quot;) govern your use of the Instant SWMS website and
+        These Terms of Service (&quot;Terms&quot;) govern your use of the SWMS Sorted website and
         document generation service (the &quot;Service&quot;). By using the Service, you agree to
         these Terms. If you don&apos;t agree, don&apos;t use the Service.
       </p>
 
       <h2>1. What the Service does</h2>
       <p>
-        Instant SWMS generates draft Safe Work Method Statement (SWMS) documents based on the
+        SWMS Sorted generates draft Safe Work Method Statement (SWMS) documents based on the
         information you provide about your business and the job. Documents are produced by our
         automated system and delivered as downloadable PDF files.
       </p>
@@ -109,7 +109,7 @@ export default function TermsPage() {
       <h2>10. Contact</h2>
       <p>
         Questions? Email{" "}
-        <a href="mailto:support@swmsgenerator.com.au">support@swmsgenerator.com.au</a>.
+        <a href="mailto:support@swmssorted.com.au">support@swmssorted.com.au</a>.
       </p>
     </>
   );
