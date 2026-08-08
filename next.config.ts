@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         destination: "https://swmssorted.com.au/:path*",
         permanent: true,
       },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "swms-generator.vercel.app" }],
+        destination: "https://swmssorted.com.au/:path*",
+        permanent: true,
+      },
     ];
   },
 };
