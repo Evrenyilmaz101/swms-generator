@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://swms-generator.vercel.app";
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au").trim();
     const sign_url = `${siteUrl}/sign/${result.sign_code}`;
 
     return NextResponse.json({

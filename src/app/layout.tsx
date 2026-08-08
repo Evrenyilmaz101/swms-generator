@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "Australia",
   ],
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+    (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim()
   ),
   appleWebApp: {
     capable: true,

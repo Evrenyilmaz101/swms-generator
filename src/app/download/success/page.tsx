@@ -84,6 +84,25 @@ function SuccessContent() {
     documentPayload?: any
   ) {
     try {
+      // Reuse the session from a previous visit: every create mints a NEW
+      // code, and signatures collected under the old code silently vanish
+      // from copies downloaded under a fresh one
+      const docRef = documentPayload?.document_reference;
+      const cacheKey = docRef ? `swms_signcode_${docRef}` : null;
+      if (cacheKey) {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const check = await fetch(`/api/sign/validate?code=${cached}`)
+            .then((r) => r.json())
+            .catch(() => null);
+          if (check?.valid) {
+            setSignOffUrl(`${window.location.origin}/sign/${cached}`);
+            setSignOffCode(cached);
+            return cached;
+          }
+        }
+      }
+
       const res = await fetch("/api/sign/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,6 +118,7 @@ function SuccessContent() {
       if (data.success) {
         setSignOffUrl(data.sign_url);
         setSignOffCode(data.sign_code);
+        if (cacheKey) localStorage.setItem(cacheKey, data.sign_code);
         return data.sign_code;
       }
     } catch { /* not critical */ }

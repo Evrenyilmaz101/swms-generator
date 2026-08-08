@@ -4,7 +4,7 @@ import {
   SEO_TRADE_PAGES,
 } from "@/lib/constants/seo-pages";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au";
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au").trim();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

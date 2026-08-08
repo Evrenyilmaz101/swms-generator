@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }));
 
     // Generate QR code for the sign-off URL
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://swms-generator.vercel.app";
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au").trim();
     const signOffUrl = `${siteUrl}/sign/${code}`;
     let signOffQrBase64: string | undefined;
 
