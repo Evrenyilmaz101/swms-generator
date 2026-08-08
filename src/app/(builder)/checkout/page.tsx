@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const [downloaded, setDownloaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signOffUrl, setSignOffUrl] = useState<string | null>(null);
+  const [signOffCode, setSignOffCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const hasToken = !!redemptionToken;
@@ -62,7 +63,7 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  const createSignOff = useCallback(async () => {
+  const createSignOff = useCallback(async (): Promise<string | null> => {
     try {
       // Reuse the session from a previous visit: every create mints a NEW
       // code, and signatures collected under the old code silently vanish
@@ -77,7 +78,8 @@ export default function CheckoutPage() {
             .catch(() => null);
           if (check?.valid) {
             setSignOffUrl(`${window.location.origin}/sign/${cached}`);
-            return;
+            setSignOffCode(cached);
+            return cached;
           }
         }
       }
@@ -96,10 +98,13 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (data.success) {
         setSignOffUrl(data.sign_url);
+        setSignOffCode(data.sign_code);
         if (cacheKey) localStorage.setItem(cacheKey, data.sign_code);
         localStorage.setItem(`swms_doc_${data.sign_code}`, JSON.stringify(buildPdfPayload()));
+        return data.sign_code;
       }
     } catch { /* sign-off is a bonus — never block the download on it */ }
+    return null;
   }, [businessDetails, jobDetails, buildPdfPayload]);
 
   const downloadPdf = useCallback(async () => {
@@ -169,10 +174,14 @@ export default function CheckoutPage() {
       const swmsSessionId = `swms_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
       sessionStorage.setItem(`swms_data_${swmsSessionId}`, JSON.stringify(buildPdfPayload()));
       sessionStorage.setItem("pending_swms_session", swmsSessionId);
+      // Create the document's sign-off session BEFORE payment so the code can
+      // ride through Stripe metadata — the webhook emails the buyer their
+      // permanent document link, so losing the browser tab loses nothing
+      const signCode = await createSignOff();
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, swms_session_id: swmsSessionId }),
+        body: JSON.stringify({ plan, swms_session_id: swmsSessionId, sign_code: signCode || undefined }),
       });
       const data = await res.json();
       if (data.url) {
@@ -206,6 +215,11 @@ export default function CheckoutPage() {
               DOWNLOAD PDF ↓
             </button>
           </div>
+          {signOffCode && (
+            <button onClick={() => router.push(`/documents/${signOffCode}`)} className="sw-btn" style={{ width: "100%", padding: 16, fontSize: 19, marginBottom: 22 }}>
+              OPEN YOUR DOCUMENT PAGE →
+            </button>
+          )}
           {signOffUrl && (
             <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "16px 20px", marginBottom: 22, textAlign: "left" }}>
               <div style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 8 }}>DIGITAL SIGN-OFF — SEND TO THE CREW</div>
@@ -215,7 +229,7 @@ export default function CheckoutPage() {
                   {copied ? "COPIED ✓" : "COPY LINK"}
                 </button>
               </div>
-              <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.5)", marginTop: 8 }}>WORKERS SIGN ON THEIR PHONES · VALID 12 MONTHS</div>
+              <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.5)", marginTop: 8 }}>WORKERS SIGN ON THEIR PHONES · CREW SIGNATURES LAND ON YOUR DOCUMENT PAGE</div>
             </div>
           )}
           {error && <div style={{ fontFamily: MONO, fontSize: 12, color: "var(--sorange)", marginBottom: 18 }}>{error.toUpperCase()}</div>}

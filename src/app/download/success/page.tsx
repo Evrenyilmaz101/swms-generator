@@ -65,7 +65,25 @@ function SuccessContent() {
       try {
         const response = await fetch(`/api/verify-payment?session_id=${sessionId}`);
         const data = await response.json();
-        if (data.success) setPaymentInfo(data.payment);
+        if (data.success) {
+          setPaymentInfo(data.payment);
+          // Surface the document page straight away — the sign-off session
+          // already exists (created before payment), so this just reuses it
+          try {
+            const pendingSessionId = sessionStorage.getItem("pending_swms_session");
+            const stored = pendingSessionId ? sessionStorage.getItem(`swms_data_${pendingSessionId}`) : null;
+            if (stored) {
+              const payload = JSON.parse(stored);
+              payloadRef.current = payload;
+              createSignOff(
+                payload.business_name || "",
+                payload.swms_data?.scope_of_work || payload.job_description || "",
+                payload.state || "",
+                payload
+              );
+            }
+          } catch { /* non-critical — the download button path retries */ }
+        }
         else setError(data.error || "Payment verification failed. Please contact support.");
       } catch {
         setError("Unable to verify payment. Please contact support.");
@@ -74,6 +92,7 @@ function SuccessContent() {
       }
     }
     verifyPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   async function createSignOff(
@@ -213,7 +232,7 @@ function SuccessContent() {
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "64px 0", textAlign: "center" }}>
         <div style={{ width: 88, height: 88, margin: "0 auto 28px", border: "2px solid var(--ink)", background: "var(--swa)", boxShadow: "7px 7px 0 var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 700 }}>✓</div>
         <h1 style={{ margin: "0 0 12px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(48px,5.4vw,72px)", lineHeight: 0.95, textTransform: "uppercase" }}>Done. Go build.</h1>
-        <p style={{ margin: "0 0 34px", fontSize: 16.5, color: "rgba(26,25,23,.72)" }}>Payment sorted — your SWMS is ready, and a receipt&apos;s on its way to your inbox.</p>
+        <p style={{ margin: "0 0 34px", fontSize: 16.5, color: "rgba(26,25,23,.72)" }}>Payment sorted — your SWMS is ready. Your receipt and your document link are on their way to your inbox, so nothing gets lost.</p>
 
         {paymentInfo && (
           <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 8, marginBottom: 22, fontFamily: MONO, fontSize: 12, textAlign: "left" }}>
@@ -260,10 +279,20 @@ function SuccessContent() {
               <a href={`mailto:?subject=SWMS Sign-Off Required&body=Please sign off on the SWMS before arriving on site: ${signOffUrl}`} className="sw-chip-ghost" style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>EMAIL</a>
             </div>
             <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.5)" }}>
-              CODE: {signOffCode} · VALID 12 MONTHS ·{" "}
-              <Link href={`/documents/${signOffCode}`} style={{ color: "var(--ink)" }}>TRACK SIGNATURES →</Link>
+              CODE: {signOffCode} · VALID 12 MONTHS
             </div>
           </div>
+        )}
+
+        {signOffCode && (
+          <Link href={`/documents/${signOffCode}`} className="sw-btn" style={{ display: "block", padding: 16, fontSize: 19, marginBottom: 10, textDecoration: "none", textAlign: "center" }}>
+            OPEN YOUR DOCUMENT PAGE →
+          </Link>
+        )}
+        {signOffCode && (
+          <p style={{ margin: "0 0 22px", fontFamily: MONO, fontSize: 10.5, letterSpacing: ".05em", color: "rgba(26,25,23,.55)" }}>
+            RE-DOWNLOADS, TOOLBOX TALK &amp; CREW SIGNATURES LIVE THERE — LINK&apos;S ALSO IN YOUR EMAIL
+          </p>
         )}
 
         <div style={{ display: "flex", justifyContent: "center", gap: 18, flexWrap: "wrap" }}>

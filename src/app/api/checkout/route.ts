@@ -11,6 +11,10 @@ const PRICES = {
 const requestSchema = z.object({
   plan: z.enum(["single", "three_pack"]),
   swms_session_id: z.string().min(1),
+  // Document sign-off code, created client-side before payment — rides
+  // through Stripe metadata so the webhook can email the buyer their
+  // permanent document link
+  sign_code: z.string().min(6).max(16).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -32,7 +36,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    const { plan, swms_session_id } = parsed.data;
+    const { plan, swms_session_id, sign_code } = parsed.data;
 
     const key = process.env.STRIPE_SECRET_KEY?.trim();
     if (!key) {
@@ -63,6 +67,7 @@ export async function POST(request: NextRequest) {
     params.set("line_items[0][quantity]", "1");
     params.set("metadata[plan]", plan);
     params.set("metadata[swms_session_id]", swms_session_id);
+    if (sign_code) params.set("metadata[sign_code]", sign_code);
     params.set("success_url", `${siteUrl}/download/success?session_id={CHECKOUT_SESSION_ID}`);
     params.set("cancel_url", `${siteUrl}/checkout`);
 

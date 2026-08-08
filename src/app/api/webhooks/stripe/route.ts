@@ -6,6 +6,7 @@ import {
   findPurchaseByStripeSession,
 } from "@/lib/supabase/purchases";
 import { sendRedemptionEmail } from "@/lib/email/send-redemption-email";
+import { sendDocumentEmail } from "@/lib/email/send-document-email";
 
 // Manual Stripe signature verification (avoids Stripe SDK HTTP client issues on Vercel/Node 24)
 function verifyStripeSignature(
@@ -161,6 +162,22 @@ async function handleCheckoutCompleted(session: StripeSession) {
         console.log(`[webhook] Redemption email sent to ${email}`);
       } catch (emailErr) {
         console.error("[webhook] Failed to send redemption email:", emailErr);
+      }
+    }
+
+    // Email the buyer their permanent document link — the buying browser
+    // tab is the only other place it exists, and tabs get closed
+    const signCode = session.metadata?.sign_code;
+    if (plan === "single" && email && signCode) {
+      try {
+        await sendDocumentEmail({
+          to: email,
+          signCode,
+          amountPaid: session.amount_total || 799,
+        });
+        console.log(`[webhook] Document email sent to ${email}`);
+      } catch (emailErr) {
+        console.error("[webhook] Failed to send document email:", emailErr);
       }
     }
   } catch (error) {
