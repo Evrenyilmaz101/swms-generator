@@ -4,6 +4,12 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const MONO = "'IBM Plex Mono', monospace";
+const COND = "'Barlow Condensed', sans-serif";
+
+const label: React.CSSProperties = { fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", display: "block", marginBottom: 6 };
+const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "2px solid var(--ink)", background: "var(--card)", padding: "13px 14px", fontFamily: "var(--f-body)", fontSize: 16, outline: "none" };
+
 type PageState = "loading" | "ready" | "signing" | "submitting" | "success" | "error";
 
 interface SessionData {
@@ -102,7 +108,7 @@ export default function SignOffPage() {
       ctx.beginPath();
       ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
       ctx.lineTo(point.x, point.y);
-      ctx.strokeStyle = "#0C0A09";
+      ctx.strokeStyle = "#1A1917";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -183,12 +189,8 @@ export default function SignOffPage() {
   if (state === "loading") {
     return (
       <Shell>
-        <div className="flex flex-col items-center justify-center py-20">
-          <svg className="w-8 h-8 text-[#78716C] animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-[14px] text-[#78716C] mt-4">Validating sign-off code...</p>
+        <div style={{ textAlign: "center", padding: "100px 0", fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)" }}>
+          ▶ CHECKING YOUR SIGN-OFF CODE…
         </div>
       </Shell>
     );
@@ -198,17 +200,11 @@ export default function SignOffPage() {
   if (state === "error") {
     return (
       <Shell>
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h1 className="text-[24px] font-bold text-[#0C0A09]">Can&apos;t load sign-off</h1>
-          <p className="text-[15px] text-[#78716C] mt-2 max-w-sm">{errorMsg}</p>
-          <Link href="/" className="mt-6 text-[14px] font-medium text-[#0C0A09] underline">
-            Go to SWMS Sorted
-          </Link>
+        <div style={{ maxWidth: 480, margin: "0 auto", padding: "80px 0", textAlign: "center" }}>
+          <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".14em", color: "var(--sorange)", marginBottom: 14 }}>⚠ CAN&apos;T LOAD SIGN-OFF</div>
+          <h1 style={{ margin: "0 0 16px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(36px,8vw,52px)", lineHeight: 0.95, textTransform: "uppercase" }}>No good.</h1>
+          <p style={{ margin: "0 0 30px", fontSize: 16, color: "rgba(26,25,23,.72)" }}>{errorMsg}</p>
+          <Link href="/" className="sw-ghost" style={{ padding: "13px 24px", fontSize: 17 }}>GO TO SWMS SORTED</Link>
         </div>
       </Shell>
     );
@@ -218,27 +214,20 @@ export default function SignOffPage() {
   if (state === "success") {
     return (
       <Shell>
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-[28px] font-bold text-[#0C0A09]">Signed off</h1>
-          <p className="text-[15px] text-[#78716C] mt-2">
-            Thanks {workerName.split(" ")[0]}. Your signature has been recorded.
+        <div style={{ maxWidth: 480, margin: "0 auto", padding: "64px 0", textAlign: "center" }}>
+          <div style={{ width: 80, height: 80, margin: "0 auto 26px", border: "2px solid var(--ink)", background: "var(--swa)", boxShadow: "6px 6px 0 var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 700 }}>✓</div>
+          <h1 style={{ margin: "0 0 10px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(42px,9vw,60px)", lineHeight: 0.95, textTransform: "uppercase" }}>Signed off.</h1>
+          <p style={{ margin: "0 0 22px", fontSize: 16, color: "rgba(26,25,23,.72)" }}>
+            Good on ya, {workerName.split(" ")[0]}. Your signature&apos;s on the record.
           </p>
-          <div className="mt-6 bg-[#F5F5F4] rounded-xl px-5 py-3 text-[13px] text-[#78716C]">
-            {signatureCount} of {session?.worker_count} workers signed
+          <div style={{ display: "inline-block", border: "2px solid var(--ink)", background: "var(--card)", padding: "8px 16px", fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".08em", marginBottom: 30 }}>
+            {signatureCount} WORKER{signatureCount === 1 ? "" : "S"} SIGNED ON
           </div>
-          <button
-            onClick={nextWorker}
-            className="mt-8 w-full max-w-sm px-8 py-4 bg-[#0C0A09] text-white text-[16px] font-bold rounded-xl hover:bg-[#1C1917] transition-colors"
-          >
+          <button onClick={nextWorker} className="sw-btn-ink" style={{ width: "100%", padding: 16, fontSize: 18 }}>
             PASS THE PHONE — NEXT WORKER SIGNS →
           </button>
-          <p className="text-[12px] text-[#A8A29E] mt-3">
-            Hand the phone to the next crew member, or close this page when everyone&apos;s signed.
+          <p style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: ".06em", color: "rgba(26,25,23,.5)", marginTop: 14 }}>
+            HAND IT TO THE NEXT CREW MEMBER, OR CLOSE THIS WHEN EVERYONE&apos;S ON
           </p>
         </div>
       </Shell>
@@ -248,92 +237,56 @@ export default function SignOffPage() {
   // Ready / Signing
   return (
     <Shell>
-      <div className="max-w-lg mx-auto py-6 sm:py-10">
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "28px 0 60px" }}>
         {/* Job summary */}
-        <div className="bg-white rounded-2xl border border-[#E7E5E4] p-5 mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <svg className="w-4 h-4 text-[#0C0A09]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
-            </svg>
-            <h2 className="text-[14px] font-semibold text-[#0C0A09]">SWMS Sign-Off</h2>
+        <div style={{ border: "2px solid var(--ink)", background: "var(--card)", boxShadow: "6px 6px 0 rgba(26,25,23,.12)", marginBottom: 24 }}>
+          <div style={{ background: "var(--ink)", color: "var(--paper)", padding: "9px 14px", display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+            <span style={{ fontFamily: COND, fontWeight: 800, fontSize: 18, letterSpacing: ".04em" }}>SWMS SIGN-OFF</span>
+            <span style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: ".1em", color: "rgba(244,241,233,.75)" }}>{signatureCount} SIGNED</span>
           </div>
-          <p className="text-[13px] text-[#78716C] leading-relaxed">
-            <strong>{session?.business_name}</strong> — {session?.job_description}
-          </p>
-          <div className="flex items-center gap-3 mt-3">
-            <span className="text-[12px] font-medium text-[#78716C] bg-[#F5F5F4] px-2 py-1 rounded">
-              {session?.state}
-            </span>
-            <span className="text-[12px] font-medium text-[#78716C]">
-              {signatureCount} of {session?.worker_count} signed
-            </span>
+          <div style={{ padding: "12px 14px" }}>
+            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{session?.business_name}</div>
+            <p style={{ margin: 0, fontSize: 13.5, color: "rgba(26,25,23,.72)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{session?.job_description}</p>
+            <div style={{ marginTop: 10 }}>
+              <span style={{ border: "1px solid var(--ink)", background: "var(--swa)", padding: "3px 10px", fontFamily: MONO, fontSize: 10, fontWeight: 600, letterSpacing: ".1em" }}>{session?.state}</span>
+            </div>
           </div>
         </div>
 
         {/* Worker details */}
-        <div className="space-y-4 mb-6">
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 22 }}>
           <div>
-            <label className="block text-[13px] font-medium text-[#0C0A09] mb-1.5">
-              Your full name *
-            </label>
-            <input
-              type="text"
-              value={workerName}
-              onChange={(e) => setWorkerName(e.target.value)}
-              placeholder="e.g. John Smith"
-              className="w-full h-12 px-4 text-[15px] text-[#0C0A09] placeholder:text-[#A8A29E] bg-white border border-[#E7E5E4] rounded-xl outline-none focus:border-[#0C0A09] transition-colors"
-            />
+            <label style={label} htmlFor="w-name">YOUR FULL NAME *</label>
+            <input id="w-name" type="text" value={workerName} onChange={(e) => setWorkerName(e.target.value)} placeholder="e.g. John Smith" style={input} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <label className="block text-[13px] font-medium text-[#0C0A09] mb-1.5">
-                Role / Trade
-              </label>
-              <input
-                type="text"
-                value={workerRole}
-                onChange={(e) => setWorkerRole(e.target.value)}
-                placeholder="e.g. Electrician"
-                className="w-full h-12 px-4 text-[15px] text-[#0C0A09] placeholder:text-[#A8A29E] bg-white border border-[#E7E5E4] rounded-xl outline-none focus:border-[#0C0A09] transition-colors"
-              />
+              <label style={label} htmlFor="w-role">ROLE / TRADE</label>
+              <input id="w-role" type="text" value={workerRole} onChange={(e) => setWorkerRole(e.target.value)} placeholder="e.g. Electrician" style={input} />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#0C0A09] mb-1.5">
-                Licence No.
-              </label>
-              <input
-                type="text"
-                value={licenceNumber}
-                onChange={(e) => setLicenceNumber(e.target.value)}
-                placeholder="Optional"
-                className="w-full h-12 px-4 text-[15px] text-[#0C0A09] placeholder:text-[#A8A29E] bg-white border border-[#E7E5E4] rounded-xl outline-none focus:border-[#0C0A09] transition-colors"
-              />
+              <label style={label} htmlFor="w-licence">LICENCE NO.</label>
+              <input id="w-licence" type="text" value={licenceNumber} onChange={(e) => setLicenceNumber(e.target.value)} placeholder="Optional" style={input} />
             </div>
           </div>
         </div>
 
         {/* Signature pad */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-[13px] font-medium text-[#0C0A09]">
-              Your signature *
-            </label>
-            {(state === "signing") && (
-              <button
-                onClick={clearSignature}
-                className="text-[12px] font-medium text-[#78716C] hover:text-[#0C0A09] transition-colors"
-              >
-                Clear
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+            <span style={label}>YOUR SIGNATURE *</span>
+            {state === "signing" && (
+              <button onClick={clearSignature} style={{ border: "none", background: "transparent", cursor: "pointer", fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "#7A1B0C", padding: 0 }}>
+                ✕ CLEAR
               </button>
             )}
           </div>
-          <div className="relative bg-white border-2 border-[#E7E5E4] rounded-xl overflow-hidden" style={{ touchAction: "none" }}>
+          <div style={{ position: "relative", background: "var(--card)", border: "2px solid var(--ink)", boxShadow: "5px 5px 0 rgba(26,25,23,.12)", overflow: "hidden", touchAction: "none" }}>
             <canvas
               ref={canvasRef}
               width={600}
               height={200}
-              className="w-full cursor-crosshair"
-              style={{ height: 160 }}
+              style={{ width: "100%", height: 160, cursor: "crosshair", display: "block" }}
               onMouseDown={startDraw}
               onMouseMove={draw}
               onMouseUp={endDraw}
@@ -343,40 +296,26 @@ export default function SignOffPage() {
               onTouchEnd={endDraw}
             />
             {state === "ready" && !hasDrawnRef.current && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p className="text-[14px] text-[#D6D3D1]">Sign here with your finger or mouse</p>
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                <p style={{ fontFamily: MONO, fontSize: 12, letterSpacing: ".08em", color: "rgba(26,25,23,.35)" }}>SIGN HERE — FINGER OR MOUSE</p>
               </div>
             )}
-            <div className="absolute bottom-3 left-4 right-4 border-b border-[#E7E5E4]" />
+            <div style={{ position: "absolute", bottom: 14, left: 16, right: 16, borderBottom: "1px solid rgba(26,25,23,.3)", pointerEvents: "none" }} />
           </div>
         </div>
 
         {/* Disclaimer + Submit */}
-        <p className="text-[12px] text-[#A8A29E] text-center mb-4 leading-relaxed">
-          By signing, I confirm I have read, understood, and agree to comply with this Safe Work Method Statement.
+        <p style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: ".04em", color: "rgba(26,25,23,.55)", textAlign: "center", margin: "0 0 16px", lineHeight: 1.6 }}>
+          BY SIGNING, I CONFIRM I&apos;VE READ, UNDERSTOOD &amp; AGREE TO COMPLY WITH THIS SWMS
         </p>
 
         <button
           onClick={handleSubmit}
           disabled={!workerName.trim() || !hasDrawnRef.current || state === "submitting"}
-          className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-[#0C0A09] text-white text-[16px] font-semibold rounded-xl hover:bg-[#1C1917] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="sw-btn"
+          style={{ width: "100%", padding: 17, fontSize: 20, opacity: (!workerName.trim() || !hasDrawnRef.current || state === "submitting") ? 0.55 : 1 }}
         >
-          {state === "submitting" ? (
-            <>
-              <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Saving...
-            </>
-          ) : (
-            <>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Sign &amp; confirm
-            </>
-          )}
+          {state === "submitting" ? "SAVING…" : "SIGN & CONFIRM ✓"}
         </button>
       </div>
     </Shell>
@@ -386,18 +325,17 @@ export default function SignOffPage() {
 // Shell wrapper — consistent layout for all states
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#FAFAF9]">
-      <header className="bg-[#FAFAF9] border-b border-[#E7E5E4]">
-        <div className="max-w-lg mx-auto px-5 h-14 flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#0C0A09] flex items-center justify-center">
-              <span className="text-[13px] font-extrabold text-[#FFD600]">S</span>
-            </div>
-            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">SWMS Sorted</span>
+    <div style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 10, background: "repeating-linear-gradient(-45deg, #1A1917 0 10px, var(--swa) 10px 20px)", borderBottom: "2px solid var(--ink)" }} />
+      <header style={{ borderBottom: "2px solid var(--ink)", background: "var(--paper)" }}>
+        <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 20px", height: 54, display: "flex", alignItems: "center" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "var(--ink)" }}>
+            <div style={{ width: 24, height: 24, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 6px, var(--swa) 6px 12px)" }} />
+            <span style={{ fontFamily: COND, fontWeight: 800, fontSize: 19, letterSpacing: ".04em" }}>SWMS SORTED</span>
           </Link>
         </div>
       </header>
-      <main className="px-4 sm:px-5">
+      <main style={{ padding: "0 20px", flex: 1 }}>
         {children}
       </main>
     </div>
