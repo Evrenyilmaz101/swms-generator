@@ -103,6 +103,43 @@ export default function ReviewPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* ── Inline step editing ── */
+  const [editingStep, setEditingStep] = useState<number | null>(null);
+  const [draftActivity, setDraftActivity] = useState("");
+  const [draftHazards, setDraftHazards] = useState("");
+  const [draftControls, setDraftControls] = useState("");
+  const [draftResponsible, setDraftResponsible] = useState("");
+
+  const startEdit = (st: ProcedureStep) => {
+    setEditingStep(st.step_number);
+    setDraftActivity(st.activity);
+    setDraftHazards(st.hazards.join("\n"));
+    setDraftControls(st.controls.join("\n"));
+    setDraftResponsible(st.responsible);
+  };
+
+  const saveEdit = () => {
+    if (!generatedSwms || editingStep === null || !draftActivity.trim()) return;
+    const lines = (s: string) => s.split("\n").map((l) => l.trim()).filter(Boolean);
+    const hazards = lines(draftHazards);
+    const controls = lines(draftControls);
+    setGeneratedSwms({
+      ...generatedSwms,
+      steps: generatedSwms.steps.map((st) =>
+        st.step_number === editingStep
+          ? {
+              ...st,
+              activity: draftActivity.trim(),
+              hazards: hazards.length ? hazards : ["To be assessed on site"],
+              controls: controls.length ? controls : ["Controls to be confirmed by competent person"],
+              responsible: draftResponsible.trim() || st.responsible,
+            }
+          : st
+      ),
+    });
+    setEditingStep(null);
+  };
+
   /* ── Add-a-step form ── */
   const [adding, setAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -178,7 +215,7 @@ export default function ReviewPage() {
       <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".16em", color: "rgba(26,25,23,.6)", marginBottom: 12 }}>STEP 02 — REVIEW THE METHOD</div>
       <h1 style={{ margin: "0 0 12px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(44px,5vw,64px)", lineHeight: 0.95, textTransform: "uppercase" }}>Review the calls.</h1>
       <p style={{ margin: "0 0 26px", fontSize: 16.5, color: "rgba(26,25,23,.72)", maxWidth: 640 }}>
-        We&apos;ve drafted the method. Untick anything that doesn&apos;t apply — you&apos;re the competent person here, not us.
+        We&apos;ve drafted the method. Untick what doesn&apos;t apply, hit ✎ to reword anything — you&apos;re the competent person here, not us.
       </p>
 
       {/* Summary chips */}
@@ -209,20 +246,53 @@ export default function ReviewPage() {
                 <div style={{ fontFamily: COND, fontWeight: 700, fontSize: 23, letterSpacing: ".02em", textTransform: "uppercase" }}>
                   {st.step_number}. {st.activity}
                 </div>
-                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
                   <RiskBadge rating={st.initial_risk.rating} />
                   <span style={{ fontFamily: MONO, fontSize: 11, color: "rgba(26,25,23,.5)" }}>→</span>
                   <RiskBadge rating={st.residual_risk.rating} />
+                  {on && editingStep !== st.step_number && (
+                    <button onClick={() => startEdit(st)} className="sw-chip-ghost" style={{ padding: "5px 12px", fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em" }}>
+                      ✎ EDIT
+                    </button>
+                  )}
                 </div>
               </div>
-              <div style={{ padding: "14px 20px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ fontFamily: MONO, fontSize: 11.5, letterSpacing: ".04em", color: "var(--sorange)", fontWeight: 500 }}>
-                  HAZARDS: {st.hazards.join(" · ").toUpperCase()}
+              {editingStep === st.step_number ? (
+                <div style={{ padding: "16px 20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 5 }}>STEP TITLE</div>
+                    <input value={draftActivity} onChange={(e) => setDraftActivity(e.target.value)} style={{ width: "100%", boxSizing: "border-box", border: "2px solid var(--ink)", background: "var(--paper)", padding: "10px 12px", fontFamily: "var(--f-body)", fontSize: 15, outline: "none" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 5 }}>HAZARDS — ONE PER LINE</div>
+                    <textarea value={draftHazards} onChange={(e) => setDraftHazards(e.target.value)} rows={Math.max(2, draftHazards.split("\n").length)} style={{ width: "100%", boxSizing: "border-box", border: "2px solid var(--ink)", background: "var(--paper)", padding: "10px 12px", fontFamily: "var(--f-body)", fontSize: 14.5, outline: "none", resize: "vertical", lineHeight: 1.5 }} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 5 }}>CONTROLS — ONE PER LINE</div>
+                    <textarea value={draftControls} onChange={(e) => setDraftControls(e.target.value)} rows={Math.max(3, draftControls.split("\n").length)} style={{ width: "100%", boxSizing: "border-box", border: "2px solid var(--ink)", background: "var(--paper)", padding: "10px 12px", fontFamily: "var(--f-body)", fontSize: 14.5, outline: "none", resize: "vertical", lineHeight: 1.5 }} />
+                    <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: ".04em", color: "rgba(26,25,23,.5)", marginTop: 4 }}>
+                      TAGS LIKE [ENGINEERING] OR [PPE] AT THE START OF A LINE PRINT AS HIERARCHY-OF-CONTROLS MARKERS
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 5 }}>RESPONSIBLE</div>
+                    <input value={draftResponsible} onChange={(e) => setDraftResponsible(e.target.value)} style={{ width: "100%", boxSizing: "border-box", border: "2px solid var(--ink)", background: "var(--paper)", padding: "10px 12px", fontFamily: "var(--f-body)", fontSize: 15, outline: "none" }} />
+                  </div>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button onClick={saveEdit} disabled={!draftActivity.trim()} className="sw-btn sw-btn-sm" style={{ padding: "10px 20px", fontSize: 16, opacity: draftActivity.trim() ? 1 : 0.4 }}>SAVE STEP</button>
+                    <button onClick={() => setEditingStep(null)} className="sw-chip-ghost" style={{ padding: "10px 20px", fontFamily: COND, fontWeight: 700, fontSize: 16, letterSpacing: ".07em" }}>NEVER MIND</button>
+                  </div>
                 </div>
-                <div style={{ fontSize: 14.5, lineHeight: 1.55, color: "rgba(26,25,23,.85)" }}>
-                  <strong style={{ fontWeight: 600 }}>Controls:</strong> {st.controls.map(cleanControl).join("; ")}
+              ) : (
+                <div style={{ padding: "14px 20px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ fontFamily: MONO, fontSize: 11.5, letterSpacing: ".04em", color: "var(--sorange)", fontWeight: 500 }}>
+                    HAZARDS: {st.hazards.join(" · ").toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: 14.5, lineHeight: 1.55, color: "rgba(26,25,23,.85)" }}>
+                    <strong style={{ fontWeight: 600 }}>Controls:</strong> {st.controls.map(cleanControl).join("; ")}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}

@@ -600,7 +600,7 @@ export default function Home() {
             {[
               ["Is it actually WHS-compliant?", "Every document follows the Safe Work Australia model SWMS format and is matched to your state's WHS regulations and codes of practice, with high-risk construction work categories flagged. Like any SWMS — bought, templated or written by hand — it must be reviewed and signed by a competent person before work starts."],
               ["Do I need an account?", "No. Describe the job, review the document, pay, download your PDF on the spot. A receipt goes to your email — that's the whole relationship."],
-              ["Can I edit the SWMS before I pay?", "Yes — you review every job step, hazard and control before paying. Untick what doesn't apply, add what's missing. You only pay when it reads right."],
+              ["Can I edit the SWMS before I pay?", "Yes — every job step, hazard and control is fully editable before you pay. Reword anything, untick what doesn't apply, add what's missing. You only pay when it reads right."],
               ["Which trades does it cover?", "Any construction trade — electrical, carpentry, plumbing, roofing, concreting, scaffolding, demolition, excavation and the rest. If the job's unusual, just describe it plainly and the method comes out specific to it."],
               ["What if the builder knocks it back?", "Regenerate it free with the feedback you got. Still not usable? Full refund within 7 days — no forms, no argument."],
             ].map(([q, a]) => (
