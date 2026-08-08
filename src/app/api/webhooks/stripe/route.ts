@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase/purchases";
 import { sendRedemptionEmail } from "@/lib/email/send-redemption-email";
 import { sendDocumentEmail } from "@/lib/email/send-document-email";
+import { ownerKeyFor } from "@/lib/utils/owner-key";
 
 // Manual Stripe signature verification (avoids Stripe SDK HTTP client issues on Vercel/Node 24)
 function verifyStripeSignature(
@@ -174,6 +175,7 @@ async function handleCheckoutCompleted(session: StripeSession) {
           to: email,
           signCode,
           amountPaid: session.amount_total || 799,
+          ownerKey: ownerKeyFor(signCode),
         });
         console.log(`[webhook] Document email sent to ${email}`);
       } catch (emailErr) {

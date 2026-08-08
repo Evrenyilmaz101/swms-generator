@@ -177,6 +177,28 @@ export async function addSignature(params: {
   return { success: true };
 }
 
+// Remove one signature — owner-only operation (the route verifies the owner
+// key); scoped to the session so a signature id can't be deleted cross-document
+export async function deleteSignature(
+  session_id: string,
+  signature_id: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getSupabase();
+
+  const { error } = await supabase
+    .from("swms_signatures")
+    .delete()
+    .eq("id", signature_id)
+    .eq("session_id", session_id);
+
+  if (error) {
+    console.error("Failed to delete signature:", error);
+    return { success: false, error: "Failed to remove signature" };
+  }
+
+  return { success: true };
+}
+
 // Get all signatures for a session
 export async function getSignatures(
   session_id: string

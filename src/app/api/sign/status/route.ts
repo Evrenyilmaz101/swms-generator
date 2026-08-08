@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       worker_count: result.session.worker_count,
       signature_count: result.signatures.length,
       signatures: result.signatures.map((s) => ({
+        id: s.id,
         worker_name: s.worker_name,
         worker_role: s.worker_role,
         signed_at: s.signed_at,

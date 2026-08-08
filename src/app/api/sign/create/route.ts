@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSignOffSession, storeSignOffDocument } from "@/lib/supabase/sign-offs";
+import { ownerKeyFor } from "@/lib/utils/owner-key";
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +44,9 @@ export async function POST(request: NextRequest) {
       sign_code: result.sign_code,
       sign_url,
       session_id: result.id,
+      // Buyer-only credential: unlocks signature removal on the documents
+      // page. Never shown on the crew sign page.
+      owner_key: ownerKeyFor(result.sign_code),
     });
   } catch (error) {
     console.error("Sign create error:", error);

@@ -15,20 +15,23 @@ interface DocumentEmailParams {
   to: string;
   signCode: string;
   amountPaid: number;
+  ownerKey?: string;
 }
 
 /** Post-purchase email with the buyer's permanent document link — the one
  *  place they can always re-download, run the toolbox talk, and collect
  *  crew sign-ons, even after the buying browser tab is long gone. */
 export async function sendDocumentEmail(params: DocumentEmailParams) {
-  const { to, signCode, amountPaid } = params;
+  const { to, signCode, amountPaid, ownerKey } = params;
 
   const siteUrl = (
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
   ).trim();
 
-  const docUrl = `${siteUrl}/documents/${signCode}`;
+  // The ?key= marks this browser as the document owner (enables managing
+  // the sign-on register) — only ever sent to the buyer's email
+  const docUrl = `${siteUrl}/documents/${signCode}${ownerKey ? `?key=${ownerKey}` : ""}`;
   const fromAddress = process.env.RESEND_FROM_EMAIL?.trim() || "SWMS Sorted <onboarding@resend.dev>";
 
   const { data, error } = await getResend().emails.send({

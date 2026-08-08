@@ -4,7 +4,11 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const MONO = "'IBM Plex Mono', monospace";
+const COND = "'Barlow Condensed', sans-serif";
+
 interface SignatureInfo {
+  id: string;
   worker_name: string;
   worker_role: string | null;
   signed_at: string;
@@ -28,6 +32,9 @@ export default function DocumentStatusPage() {
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [offlineSaved, setOfflineSaved] = useState(false);
+  const [ownerKey, setOwnerKey] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
+  const [removeError, setRemoveError] = useState("");
 
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "";
   const signOffUrl = `${siteUrl}/sign/${code}`;
@@ -53,6 +60,20 @@ export default function DocumentStatusPage() {
     if (!code) return;
     fetchStatus();
 
+    // Owner key: arrives once via the buyer's email link (?key=…) and is
+    // then remembered on this device — crew links never carry it
+    try {
+      const urlKey = new URLSearchParams(window.location.search).get("key");
+      if (urlKey) {
+        localStorage.setItem(`swms_ownerkey_${code}`, urlKey);
+        setOwnerKey(urlKey);
+        // Tidy the URL so screenshots / copied links don't leak the key
+        window.history.replaceState(null, "", `/documents/${code}`);
+      } else {
+        setOwnerKey(localStorage.getItem(`swms_ownerkey_${code}`));
+      }
+    } catch { /* storage unavailable — viewer mode */ }
+
     // Store in localStorage for return visits
     try {
       const recent = JSON.parse(localStorage.getItem("swms_recent_docs") || "[]");
@@ -71,7 +92,32 @@ export default function DocumentStatusPage() {
         .then((hit) => setOfflineSaved(!!hit))
         .catch(() => {});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, fetchStatus]);
+
+  async function removeSignature(sig: SignatureInfo) {
+    if (!ownerKey) return;
+    if (!window.confirm(`Remove ${sig.worker_name}'s sign-on from this document?`)) return;
+    setRemoving(sig.id);
+    setRemoveError("");
+    try {
+      const res = await fetch("/api/sign/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, signature_id: sig.id, owner_key: ownerKey }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setRemoveError(data.error || "Couldn't remove that signature.");
+      } else {
+        await fetchStatus();
+      }
+    } catch {
+      setRemoveError("Couldn't remove that signature — check your signal and try again.");
+    } finally {
+      setRemoving(null);
+    }
+  }
 
   // Keep the freshly generated PDF on-device so it opens with no signal
   async function saveOffline(blob: Blob) {
@@ -161,12 +207,8 @@ export default function DocumentStatusPage() {
   if (loading) {
     return (
       <Shell>
-        <div className="flex flex-col items-center justify-center py-20">
-          <svg className="w-8 h-8 text-[#78716C] animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-[14px] text-[#78716C] mt-4">Loading document...</p>
+        <div style={{ textAlign: "center", padding: "110px 0", fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)" }}>
+          ▶ PULLING UP YOUR DOCUMENT…
         </div>
       </Shell>
     );
@@ -175,14 +217,11 @@ export default function DocumentStatusPage() {
   if (error) {
     return (
       <Shell>
-        <div className="max-w-lg mx-auto py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h1 className="text-[24px] font-bold text-[#0C0A09]">Document not found</h1>
-          <p className="text-[15px] text-[#78716C] mt-2">{error}</p>
+        <div style={{ maxWidth: 560, margin: "0 auto", padding: "90px 0", textAlign: "center" }}>
+          <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".14em", color: "var(--sorange)", marginBottom: 14 }}>⚠ DOCUMENT NOT FOUND</div>
+          <h1 style={{ margin: "0 0 16px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(36px,4.5vw,52px)", lineHeight: 0.95, textTransform: "uppercase" }}>No dice.</h1>
+          <p style={{ margin: "0 0 30px", fontSize: 16, color: "rgba(26,25,23,.72)" }}>{error}</p>
+          <Link href="/" className="sw-ghost" style={{ padding: "13px 24px", fontSize: 17 }}>BACK TO HOME</Link>
         </div>
       </Shell>
     );
@@ -190,185 +229,115 @@ export default function DocumentStatusPage() {
 
   if (!status) return null;
 
-  const signedPercent = Math.round((status.signature_count / Math.max(status.worker_count, status.signature_count, 1)) * 100);
-
   return (
     <Shell>
-      <div className="max-w-[640px] mx-auto py-10 sm:py-16">
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "48px 0 80px" }}>
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-semibold text-[#78716C] tracking-[0.15em]">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 30 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: ".16em", color: "rgba(26,25,23,.6)", marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
               SWMS DOCUMENT
-            </p>
-            <h1 className="text-[28px] font-bold text-[#0C0A09] tracking-[-0.02em] mt-1">
+              {ownerKey && (
+                <span style={{ background: "var(--swa)", border: "1px solid var(--ink)", padding: "2px 8px", fontSize: 9.5, letterSpacing: ".12em" }}>OWNER</span>
+              )}
+            </div>
+            <h1 style={{ margin: "0 0 8px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(34px,4.5vw,50px)", lineHeight: 0.95, textTransform: "uppercase", overflowWrap: "anywhere" }}>
               {status.business_name}
             </h1>
-            <p className="text-[15px] text-[#78716C] mt-1 leading-relaxed max-w-md">
-              {status.job_description}
-            </p>
+            <p style={{ margin: 0, fontSize: 15, color: "rgba(26,25,23,.72)", maxWidth: 460 }}>{status.job_description}</p>
           </div>
-          <div className="text-right shrink-0">
-            <span className="text-[11px] font-semibold text-[#78716C] tracking-[0.1em]">CODE</span>
-            <p className="text-[18px] font-mono font-bold text-[#0C0A09] tracking-wider">{code}</p>
+          <div style={{ textAlign: "right", border: "2px solid var(--ink)", background: "var(--card)", padding: "10px 14px", boxShadow: "5px 5px 0 rgba(26,25,23,.12)" }}>
+            <div style={{ fontFamily: MONO, fontSize: 9.5, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.55)" }}>CODE</div>
+            <div style={{ fontFamily: MONO, fontSize: 17, fontWeight: 600, letterSpacing: ".1em" }}>{code}</div>
           </div>
         </div>
 
-        {/* Sign-off progress */}
-        <div className="mt-8 bg-white rounded-2xl border border-[#E7E5E4] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[15px] font-bold text-[#0C0A09]">Worker Sign-Off</h2>
-            <span className="text-[14px] font-semibold text-[#0C0A09]">
-              {status.signature_count} signed
-            </span>
+        {/* Sign-on register */}
+        <div style={{ border: "2px solid var(--ink)", background: "var(--card)", boxShadow: "8px 8px 0 rgba(26,25,23,.12)", marginBottom: 26 }}>
+          <div style={{ background: "var(--ink)", color: "var(--paper)", padding: "10px 16px", display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+            <span style={{ fontFamily: COND, fontWeight: 800, fontSize: 19, letterSpacing: ".04em" }}>WORKER SIGN-ON</span>
+            <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: ".1em", color: "rgba(244,241,233,.75)" }}>{status.signature_count} SIGNED</span>
           </div>
 
-          {/* Progress bar */}
-          <div className="w-full h-2 rounded-full bg-[#E7E5E4] overflow-hidden mb-6">
-            <div
-              className="h-full rounded-full bg-green-500 transition-all duration-500"
-              style={{ width: `${Math.max(signedPercent, 2)}%` }}
-            />
-          </div>
-
-          {/* Signed workers list */}
           {status.signatures.length > 0 ? (
-            <div className="space-y-2 mb-6">
-              {status.signatures.map((sig, i) => {
+            <div>
+              {status.signatures.map((sig) => {
                 const date = new Date(sig.signed_at).toLocaleDateString("en-AU", {
-                  day: "numeric",
-                  month: "short",
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
                 });
                 return (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-[#F5F5F4] last:border-0">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-semibold text-[#0C0A09]">{sig.worker_name}</p>
-                        <p className="text-[12px] text-[#78716C]">{sig.worker_role || "Worker"}</p>
-                      </div>
+                  <div key={sig.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderBottom: "1px solid rgba(26,25,23,.15)" }}>
+                    <div style={{ width: 22, height: 22, border: "2px solid var(--ink)", background: "#3F9C55", color: "var(--paper)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>✓</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14.5, fontWeight: 600, overflowWrap: "anywhere" }}>{sig.worker_name}</div>
+                      <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.55)", letterSpacing: ".04em" }}>{(sig.worker_role || "WORKER").toUpperCase()}</div>
                     </div>
-                    <span className="text-[12px] text-[#A8A29E]">{date}</span>
+                    <div style={{ fontFamily: MONO, fontSize: 10.5, color: "rgba(26,25,23,.5)", whiteSpace: "nowrap" }}>{date.toUpperCase()}</div>
+                    {ownerKey && (
+                      <button
+                        onClick={() => removeSignature(sig)}
+                        disabled={removing === sig.id}
+                        style={{ border: "none", background: "transparent", cursor: "pointer", fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", color: "#7A1B0C", padding: "4px 2px", flexShrink: 0 }}
+                      >
+                        {removing === sig.id ? "…" : "✕ REMOVE"}
+                      </button>
+                    )}
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="py-6 text-center">
-              <p className="text-[14px] text-[#A8A29E]">No signatures yet. Share the link with your crew.</p>
+            <div style={{ padding: "26px 16px", textAlign: "center", fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.5)", letterSpacing: ".06em" }}>
+              NO SIGNATURES YET — SEND THE CREW THE LINK BELOW
             </div>
+          )}
+          {removeError && (
+            <div style={{ padding: "10px 16px", fontFamily: MONO, fontSize: 11.5, fontWeight: 600, color: "var(--sorange)", borderTop: "1px solid rgba(26,25,23,.15)" }}>{removeError.toUpperCase()}</div>
           )}
 
           {/* Share link */}
-          <div className="pt-4 border-t border-[#E7E5E4]">
-            <p className="text-[13px] font-semibold text-[#0C0A09] mb-2">Share sign-off link</p>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 bg-[#FAFAF9] border border-[#E7E5E4] rounded-lg px-3 py-2.5 text-[12px] text-[#0C0A09] font-mono truncate">
-                {signOffUrl}
-              </div>
+          <div style={{ padding: "14px 16px", borderTop: "2px solid var(--ink)" }}>
+            <div style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: ".12em", color: "rgba(26,25,23,.6)", marginBottom: 8 }}>CREW SIGN-OFF LINK</div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+              <div style={{ flex: 1, minWidth: 180, fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", border: "1px solid rgba(26,25,23,.3)", background: "var(--paper)", padding: "8px 10px" }}>{signOffUrl}</div>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(signOffUrl);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                className="shrink-0 px-4 py-2.5 bg-[#0C0A09] text-white text-[12px] font-semibold rounded-lg hover:bg-[#1C1917] transition-colors"
+                onClick={() => { navigator.clipboard.writeText(signOffUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                className="sw-chip-ghost"
+                style={{ padding: "8px 14px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em" }}
               >
-                {copied ? "Copied!" : "Copy"}
+                {copied ? "COPIED ✓" : "COPY"}
               </button>
             </div>
-
-            <div className="flex items-center gap-2 mt-2">
-              <a
-                href={`sms:?body=Sign off on the SWMS before you get to site: ${signOffUrl}`}
-                className="flex-1 text-center py-2 border border-[#E7E5E4] rounded-lg text-[12px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                Text
-              </a>
-              <a
-                href={`https://wa.me/?text=Sign off on the SWMS before you get to site: ${encodeURIComponent(signOffUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 text-center py-2 border border-[#E7E5E4] rounded-lg text-[12px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                WhatsApp
-              </a>
-              <a
-                href={`mailto:?subject=SWMS Sign-Off&body=Sign off on the SWMS: ${signOffUrl}`}
-                className="flex-1 text-center py-2 border border-[#E7E5E4] rounded-lg text-[12px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-              >
-                Email
-              </a>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <a href={`sms:?body=Sign off on the SWMS before you get to site: ${signOffUrl}`} className="sw-chip-ghost" style={{ padding: "7px 14px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>TEXT</a>
+              <a href={`https://wa.me/?text=${encodeURIComponent(`Sign off on the SWMS before you get to site: ${signOffUrl}`)}`} target="_blank" rel="noopener noreferrer" className="sw-chip-ghost" style={{ padding: "7px 14px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>WHATSAPP</a>
+              <a href={`mailto:?subject=SWMS Sign-Off&body=Sign off on the SWMS: ${signOffUrl}`} className="sw-chip-ghost" style={{ padding: "7px 14px", fontSize: 11, fontWeight: 600, letterSpacing: ".08em", textDecoration: "none" }}>EMAIL</a>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="mt-6 space-y-3">
-          <Link
-            href={`/documents/${code}/talk`}
-            className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-[#F2DE1B] border-2 border-[#1A1917] text-[#1A1917] text-[15px] font-bold rounded-xl hover:bg-[#e8d417] transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73" />
-            </svg>
-            Run toolbox talk & crew sign-on
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <Link href={`/documents/${code}/talk`} className="sw-btn" style={{ display: "block", padding: 16, fontSize: 19, textAlign: "center", textDecoration: "none" }}>
+            RUN TOOLBOX TALK &amp; CREW SIGN-ON →
           </Link>
-
-          <button
-            onClick={handleRedownload}
-            disabled={downloading}
-            className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-[#0C0A09] text-white text-[15px] font-semibold rounded-xl hover:bg-[#1C1917] transition-colors disabled:opacity-70"
-          >
-            {downloading ? (
-              <>
-                <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Generating...
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-                Download PDF with signatures
-              </>
+          <button onClick={handleRedownload} disabled={downloading} className="sw-btn-ink" style={{ width: "100%", padding: 15, fontSize: 18 }}>
+            {downloading ? "BUILDING YOUR PDF…" : "DOWNLOAD PDF WITH SIGNATURES ↓"}
+          </button>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {offlineSaved && (
+              <button onClick={openOfflineCopy} className="sw-ghost" style={{ flex: 1, minWidth: 200, padding: "11px 16px", fontSize: 14 }}>
+                OPEN SAVED COPY (OFFLINE OK)
+              </button>
             )}
-          </button>
-
-          {offlineSaved && (
-            <button
-              onClick={openOfflineCopy}
-              className="w-full flex items-center justify-center gap-2 px-8 py-3 border border-[#E7E5E4] rounded-xl text-[14px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-            >
-              <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Open saved copy (works offline)
+            <button onClick={fetchStatus} className="sw-ghost" style={{ flex: 1, minWidth: 140, padding: "11px 16px", fontSize: 14 }}>
+              REFRESH ⟳
             </button>
-          )}
-
-          <button
-            onClick={fetchStatus}
-            className="w-full flex items-center justify-center gap-2 px-8 py-3 border border-[#E7E5E4] rounded-xl text-[14px] font-medium text-[#0C0A09] hover:bg-[#F5F5F4] transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
-            </svg>
-            Refresh status
-          </button>
+          </div>
         </div>
 
-        <p className="text-[12px] text-[#A8A29E] text-center mt-6">
-          Bookmark this page to check back later. Sign-off code valid for 12 months.
+        <p style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: ".06em", color: "rgba(26,25,23,.5)", textAlign: "center", marginTop: 26 }}>
+          BOOKMARK THIS PAGE — CODE VALID 12 MONTHS
         </p>
       </div>
     </Shell>
@@ -377,21 +346,20 @@ export default function DocumentStatusPage() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#FAFAF9]">
-      <header className="bg-[#FAFAF9] border-b border-[#E7E5E4]">
-        <div className="max-w-[640px] mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#0C0A09] flex items-center justify-center">
-              <span className="text-[13px] font-extrabold text-[#FFD600]">S</span>
-            </div>
-            <span className="text-sm font-semibold text-[#0C0A09] tracking-[-0.01em]">SWMS Sorted</span>
+    <div style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 10, background: "repeating-linear-gradient(-45deg, #1A1917 0 10px, var(--swa) 10px 20px)", borderBottom: "2px solid var(--ink)" }} />
+      <header style={{ borderBottom: "2px solid var(--ink)", background: "var(--paper)" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px", height: 54, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "var(--ink)" }}>
+            <div style={{ width: 24, height: 24, border: "2px solid var(--ink)", background: "repeating-linear-gradient(-45deg, #1A1917 0 6px, var(--swa) 6px 12px)" }} />
+            <span style={{ fontFamily: COND, fontWeight: 800, fontSize: 19, letterSpacing: ".04em" }}>SWMS SORTED</span>
           </Link>
-          <Link href="/" className="text-[13px] font-medium text-[#78716C] hover:text-[#0C0A09] transition-colors">
-            New SWMS
+          <Link href="/job" style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, letterSpacing: ".1em", color: "var(--ink)", textDecoration: "none" }}>
+            NEW SWMS →
           </Link>
         </div>
       </header>
-      <main className="px-5">
+      <main style={{ padding: "0 20px", flex: 1 }}>
         {children}
       </main>
     </div>

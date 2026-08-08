@@ -138,6 +138,7 @@ function SuccessContent() {
         setSignOffUrl(data.sign_url);
         setSignOffCode(data.sign_code);
         if (cacheKey) localStorage.setItem(cacheKey, data.sign_code);
+        if (data.owner_key) localStorage.setItem(`swms_ownerkey_${data.sign_code}`, data.owner_key);
         return data.sign_code;
       }
     } catch { /* not critical */ }
