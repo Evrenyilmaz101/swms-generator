@@ -60,6 +60,26 @@ function RiskBadge({ rating }: { rating: string }) {
   );
 }
 
+/**
+ * Rough render-height estimate (pt) from content volume. Used to decide
+ * page-break behaviour: short rows move to the next page as a unit, but
+ * tall rows are allowed to continue across the break — an unbreakable
+ * 400pt row would otherwise leave a huge blank tail on the page before.
+ */
+function estimateRowHeight(step: ProcedureStep): number {
+  // chars-per-line calibrated against rendered output (Inter 7pt in the
+  // actual column widths) — err low so tall rows are classed as breakable
+  const lines = (texts: string[], charsPerLine: number) =>
+    texts.reduce((n, t) => n + Math.max(1, Math.ceil(t.length / charsPerLine)), 0);
+  const controlLines = lines(step.controls, 30);
+  const hazardLines = lines(step.hazards, 20);
+  const activityLines = Math.ceil(step.activity.length / 16);
+  const maxLines = Math.max(controlLines, hazardLines, activityLines, 4);
+  return maxLines * 9.4 + step.controls.length * 2 + 12;
+}
+
+const ROW_SPLIT_THRESHOLD = 220; // rows taller than this may break across pages
+
 function StepRow({ step, index, isLast }: { step: ProcedureStep; index: number; isLast: boolean }) {
   return (
     <View
@@ -68,7 +88,10 @@ function StepRow({ step, index, isLast }: { step: ProcedureStep; index: number; 
         SIDE_BORDERS,
         isLast ? { borderBottomWidth: 1, borderBottomColor: COLORS.gray200 } : {},
       ]}
-      wrap={false}
+      // NOTE: no minPresenceAhead here — it forbids breaks within N pts
+      // AFTER the element, which on a breakable row forbids the row's own
+      // split and shoves it whole to the next page (the blank-tail bug)
+      wrap={estimateRowHeight(step) > ROW_SPLIT_THRESHOLD}
     >
       <View style={[styles.tableCell, { width: COL.step }]}>
         <Text style={[styles.tableCellText, { fontWeight: "bold" }]}>
@@ -147,22 +170,39 @@ function ColumnHeader() {
 
 export function PdfProcedureTable({ steps }: ProcedureTableProps) {
   const [first, ...rest] = steps;
+  const firstIsTall = first ? estimateRowHeight(first) > ROW_SPLIT_THRESHOLD : false;
+
+  const headers = (
+    <>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionHeaderText}>
+          JOB STEPS — HAZARDS, RISKS & CONTROLS
+        </Text>
+        <Text style={styles.sectionHeaderNote}>
+          IR = Initial Risk  |  RR = Residual Risk
+        </Text>
+      </View>
+      <ColumnHeader />
+    </>
+  );
+
   return (
     <View style={{ marginBottom: 10 }}>
-      {/* Section header + column header + first row stay together — a header
-          with no rows under it is never acceptable at a page bottom */}
-      <View wrap={false}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionHeaderText}>
-            JOB STEPS — HAZARDS, RISKS & CONTROLS
-          </Text>
-          <Text style={styles.sectionHeaderNote}>
-            IR = Initial Risk  |  RR = Residual Risk
-          </Text>
+      {/* A header with no rows under it is never acceptable at a page bottom.
+          Short first row: glue it to the headers as one unbreakable unit.
+          Tall first row: it may split across pages, so instead demand enough
+          space below the headers that the row visibly starts beneath them. */}
+      {firstIsTall ? (
+        <>
+          <View wrap={false} minPresenceAhead={160}>{headers}</View>
+          {first && <StepRow step={first} index={0} isLast={rest.length === 0} />}
+        </>
+      ) : (
+        <View wrap={false}>
+          {headers}
+          {first && <StepRow step={first} index={0} isLast={rest.length === 0} />}
         </View>
-        <ColumnHeader />
-        {first && <StepRow step={first} index={0} isLast={rest.length === 0} />}
-      </View>
+      )}
       {rest.map((step, i) => (
         <StepRow
           key={step.step_number}

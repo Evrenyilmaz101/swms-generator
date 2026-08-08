@@ -50,8 +50,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
 
         {/* HRCW Checklist */}
         <View style={styles.content}>
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>HIGH RISK CONSTRUCTION WORK (HRCW) — APPLICABLE CATEGORIES</Text>
               <Text style={styles.sectionHeaderNote}>Reg. 291</Text>
             </View>
@@ -61,8 +61,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* Scope of Work */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>SCOPE OF WORK</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -71,8 +71,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* Training & Competency */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>TRAINING, LICENCES & COMPETENCY</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -86,8 +86,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== PPE Requirements ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>PERSONAL PROTECTIVE EQUIPMENT (PPE)</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -101,8 +101,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== Plant & Equipment ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>PLANT, EQUIPMENT & MATERIALS</Text>
             </View>
             <View style={styles.table}>
@@ -143,8 +143,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           <PdfProcedureTable steps={swms_data.steps} />
 
           {/* ===== EMERGENCY PROCEDURES ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeaderEmergency}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderEmergency} minPresenceAhead={60}>
               <Text style={[styles.sectionHeaderText, { letterSpacing: 1 }]}>⚠ EMERGENCY PROCEDURES & CONTACTS</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -176,8 +176,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== COMMUNICATION & CONSULTATION ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>COMMUNICATION & CONSULTATION</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -191,8 +191,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== ENVIRONMENTAL CONDITIONS ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>ENVIRONMENTAL CONDITIONS & SITE CONSIDERATIONS</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -206,8 +206,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== LEGISLATION ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>LEGISLATION & STANDARDS ({doc.state})</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -222,8 +222,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
 
           {/* ===== PERMIT REQUIREMENTS ===== */}
           {swms_data.permit_requirements.length > 0 && (
-            <View style={styles.sectionCard} minPresenceAhead={70}>
-              <View style={styles.sectionHeader}>
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeader} minPresenceAhead={60}>
                 <Text style={styles.sectionHeaderText}>PERMIT-TO-WORK REQUIREMENTS</Text>
               </View>
               <View style={styles.sectionBody}>
@@ -238,8 +238,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           )}
 
           {/* ===== TOOLBOX TALK ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>TOOLBOX TALK — PRE-START BRIEFING</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -252,8 +252,8 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
           </View>
 
           {/* ===== SWMS REVIEW & MONITORING ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>SWMS REVIEW & MONITORING</Text>
             </View>
             <View style={styles.sectionBody}>
@@ -276,9 +276,11 @@ export function SwmsPdfDocument({ doc, watermark, signatures, signOffUrl, signOf
             preparedDate={doc.created_at}
           />
 
-          {/* ===== DOCUMENT REVIEW HISTORY ===== */}
-          <View style={styles.sectionCard} minPresenceAhead={70}>
-            <View style={styles.sectionHeader}>
+          {/* ===== DOCUMENT REVIEW HISTORY =====
+              marginBottom 0: a trailing margin here can spill past the page
+              edge and spawn a completely blank final page */}
+          <View style={[styles.sectionCard, { marginBottom: 0 }]}>
+            <View style={styles.sectionHeader} minPresenceAhead={60}>
               <Text style={styles.sectionHeaderText}>DOCUMENT REVIEW HISTORY</Text>
             </View>
             <View style={styles.table}>
