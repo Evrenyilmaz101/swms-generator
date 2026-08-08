@@ -462,6 +462,12 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <a href="/sample-swms.pdf" target="_blank" rel="noopener noreferrer" className="sw-btn-ink" style={{ display: "inline-flex", padding: "14px 26px", fontSize: 18, marginTop: 26, textDecoration: "none" }}>
+              READ A FULL SAMPLE — FREE ↗
+            </a>
+            <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: ".06em", color: "rgba(26,25,23,.55)", marginTop: 10 }}>
+              REAL 5-PAGE DOCUMENT · ROOF REPLACEMENT, PARRAMATTA · NO EMAIL NEEDED
+            </div>
           </div>
           <div data-rv="1" data-rvd="150" style={{ position: "relative", minHeight: 560, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", width: 330, aspectRatio: "1/1.414", background: "#EAE6DA", border: "2px solid var(--ink)", transform: "rotate(6deg) translate(56px,10px)" }} />
@@ -577,6 +583,10 @@ export default function Home() {
                 <Link href="/job" className="sw-btn" style={{ display: "flex", padding: 15, fontSize: 19, boxShadow: "5px 5px 0 var(--ink)" }}>GET THE 3-PACK</Link>
               </div>
             </div>
+          </div>
+          <div data-rv="1" style={{ textAlign: "center", marginTop: 40, fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: ".08em", color: "rgba(26,25,23,.7)" }}>
+            NOT USABLE? REGENERATE FREE — OR FULL REFUND WITHIN 7 DAYS. NO FORMS, NO ARGUMENT.{" "}
+            <a href="/sample-swms.pdf" target="_blank" rel="noopener noreferrer" className="sw-link" style={{ whiteSpace: "nowrap" }}>READ A SAMPLE FIRST ↗</a>
           </div>
         </div>
       </div>
