@@ -22,6 +22,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim()
   ),
+  openGraph: {
+    siteName: "SWMS Sorted",
+    type: "website",
+    locale: "en_AU",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "SWMS Sorted — compliant Safe Work Method Statements in 60 seconds" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og.png"],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -46,6 +56,20 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "SWMS Sorted",
+              url: (process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au").trim(),
+              logo: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://swmssorted.com.au").trim()}/icon-512.png`,
+              email: "support@swmssorted.com.au",
+              areaServed: "AU",
+            }),
+          }}
+        />
         {children}
         <PwaRegister />
         <Analytics />

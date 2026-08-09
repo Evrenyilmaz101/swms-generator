@@ -3,6 +3,11 @@
 
 import type { AustralianState } from "@/types/swms";
 
+export interface SeoFaq {
+  q: string;
+  a: string;
+}
+
 export interface SeoStatePage {
   slug: string;
   state: AustralianState;
@@ -17,6 +22,7 @@ export interface SeoStatePage {
   whyNeeded: string;
   fines: string;
   cta: string;
+  faq?: SeoFaq[];
 }
 
 export interface SeoTradePage {
@@ -27,10 +33,12 @@ export interface SeoTradePage {
   metaDescription: string;
   h1: string;
   intro: string;
+  whySwms?: string;
   commonHazards: string[];
   commonHrcw: string[];
   exampleJob: string;
   cta: string;
+  faq?: SeoFaq[];
 }
 
 export const SEO_STATE_PAGES: SeoStatePage[] = [
@@ -441,3 +449,14 @@ export const SEO_TRADE_PAGES: SeoTradePage[] = [
     cta: "Generate Your Confined Space SWMS",
   },
 ];
+
+// ── Generated pages + enrichment (see seo-pages-extra.ts) ──
+// New pages append to the arrays; enrichment adds faq/whySwms to existing
+// entries. Runs once at module load — everything downstream (sitemap,
+// static params, related links) picks the full set up automatically.
+import { NEW_TRADE_PAGES, NEW_STATE_PAGES, PAGE_ENRICHMENT } from "./seo-pages-extra";
+
+SEO_TRADE_PAGES.push(...NEW_TRADE_PAGES);
+SEO_STATE_PAGES.push(...NEW_STATE_PAGES);
+for (const p of SEO_TRADE_PAGES) Object.assign(p, PAGE_ENRICHMENT[p.slug]);
+for (const p of SEO_STATE_PAGES) Object.assign(p, PAGE_ENRICHMENT[p.slug]);

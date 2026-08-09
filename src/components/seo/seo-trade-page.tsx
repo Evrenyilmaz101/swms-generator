@@ -1,166 +1,123 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { SeoTradePage } from "@/lib/constants/seo-pages";
+import { SeoShell, CtaBand, FaqBlock, RelatedLinks, MONO, COND, h2Style } from "./seo-shell";
+
+const INCLUDED = [
+  "Scope of work description",
+  "HRCW activity identification",
+  "Step-by-step work procedure",
+  "Hazard identification per step",
+  "5×5 risk matrix (initial & residual)",
+  "Hierarchy of controls",
+  "PPE requirements with AS/NZS standards",
+  "Emergency procedures",
+  "Toolbox talk pre-start briefing",
+  "State-specific legislation references",
+  "Digital crew sign-on with QR code",
+  "Your logo, ABN and letterhead",
+];
 
 export function SeoTradePageContent({ page }: { page: SeoTradePage }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Nav */}
-      <header className="bg-primary text-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            <span className="text-accent">SWMS</span> Generator
-          </Link>
-          <Link
-            href="/job"
-            className="bg-accent text-primary font-bold px-5 py-2 rounded-xl hover:bg-accent-dark transition-colors text-sm"
-          >
-            Create SWMS
-          </Link>
-        </div>
-      </header>
-
+    <SeoShell crumb={`${page.trade} SWMS`}>
       {/* Hero */}
-      <section className="bg-primary text-white pb-16 pt-12 px-4">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <div className="inline-block bg-accent/20 text-accent text-sm font-semibold px-4 py-1.5 rounded-full">
-            Built for {page.tradePlural}
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold">{page.h1}</h1>
-          <p className="text-lg text-white/70">{page.intro}</p>
-          <Link
-            href="/job"
-            className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg mt-4"
-          >
-            {page.cta} — $7.99
+      <section style={{ maxWidth: 880, margin: "0 auto", padding: "34px 24px 44px", boxSizing: "border-box" }}>
+        <div style={{ display: "inline-block", border: "1px solid var(--ink)", background: "var(--swa)", padding: "5px 12px", fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", marginBottom: 16 }}>
+          BUILT FOR {page.tradePlural.toUpperCase()}
+        </div>
+        <h1 style={{ margin: "0 0 14px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(40px,5.5vw,62px)", lineHeight: 0.95, textTransform: "uppercase" }}>
+          {page.h1}
+        </h1>
+        <p style={{ margin: "0 0 24px", fontSize: 16.5, lineHeight: 1.6, color: "rgba(26,25,23,.75)", maxWidth: 640 }}>{page.intro}</p>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+          <Link href="/job" className="sw-btn" style={{ display: "inline-block", padding: "14px 28px", fontSize: 19, textDecoration: "none" }}>
+            {page.cta} — $7.99 →
           </Link>
+          <a href="/sample-swms.pdf" target="_blank" rel="noopener noreferrer" className="sw-ghost" style={{ display: "inline-block", padding: "13px 22px", fontSize: 16, textDecoration: "none" }}>
+            READ A FULL SAMPLE ↗
+          </a>
+        </div>
+        <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 10.5, letterSpacing: ".06em", color: "rgba(26,25,23,.55)" }}>
+          ✓ 60 SECONDS &nbsp; ✓ NO SIGN-UP &nbsp; ✓ EDIT EVERYTHING BEFORE YOU PAY
         </div>
       </section>
 
-      {/* Content */}
-      <section className="py-12 px-4 bg-white">
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Common hazards */}
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              Common {page.trade} Hazards Covered
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-3">
+      <div style={{ borderTop: "2px solid var(--ink)" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto", padding: "44px 24px 52px", display: "flex", flexDirection: "column", gap: 44, boxSizing: "border-box" }}>
+          {/* Why a SWMS */}
+          {page.whySwms && (
+            <section>
+              <h2 style={{ ...h2Style, marginBottom: 12 }}>Why {page.tradePlural.toLowerCase()} need one.</h2>
+              <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.65, color: "rgba(26,25,23,.78)", maxWidth: 680 }}>{page.whySwms}</p>
+            </section>
+          )}
+
+          {/* Hazards */}
+          <section>
+            <h2 style={{ ...h2Style, marginBottom: 16 }}>Common {page.trade.toLowerCase()} hazards covered.</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,300px),1fr))", gap: 10 }}>
               {page.commonHazards.map((hazard) => (
-                <div
-                  key={hazard}
-                  className="flex items-start gap-2 bg-surface rounded-lg p-3"
-                >
-                  <span className="text-error font-bold mt-0.5">!</span>
-                  <span className="text-sm">{hazard}</span>
+                <div key={hazard} style={{ border: "1px solid var(--ink)", background: "var(--card)", padding: "10px 14px", display: "flex", gap: 10, alignItems: "baseline", fontSize: 14 }}>
+                  <span style={{ fontFamily: MONO, fontWeight: 700, color: "var(--sorange)" }}>!</span>
+                  {hazard}
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* HRCW categories */}
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              High-Risk Categories for {page.tradePlural}
-            </h2>
-            <p className="text-sm text-muted mb-3">
-              {page.trade} work typically triggers these HRCW categories under
-              WHS Regulation 291:
+          {/* HRCW */}
+          <section>
+            <h2 style={{ ...h2Style, marginBottom: 10 }}>High-risk work it flags.</h2>
+            <p style={{ margin: "0 0 14px", fontFamily: MONO, fontSize: 11.5, letterSpacing: ".04em", color: "rgba(26,25,23,.6)" }}>
+              {page.trade.toUpperCase()} WORK TYPICALLY TRIGGERS THESE HRCW CATEGORIES — WHS REGULATION 291:
             </p>
-            <ul className="space-y-2">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {page.commonHrcw.map((hrcw) => (
-                <li
-                  key={hrcw}
-                  className="flex items-start gap-2 text-sm text-muted"
-                >
-                  <span className="text-accent font-bold mt-0.5">&#10003;</span>
-                  {hrcw}
-                </li>
+                <div key={hrcw} style={{ border: "1px solid var(--ink)", background: "var(--swa)", padding: "9px 14px", fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".03em" }}>
+                  ⚠ {hrcw.toUpperCase()}
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          </section>
 
           {/* Example */}
-          <div className="bg-accent/5 border border-accent/30 rounded-xl p-5">
-            <h3 className="font-bold text-primary mb-2">
-              Example: What You&apos;d Enter
-            </h3>
-            <p className="text-sm text-muted italic">
-              &ldquo;{page.exampleJob}&rdquo;
-            </p>
-            <p className="text-xs text-muted mt-2">
-              We expand this into a full SWMS with hazards, controls, risk
-              ratings, PPE, emergency procedures, and a toolbox talk script.
-            </p>
-          </div>
+          <section style={{ border: "2px solid var(--ink)", background: "var(--card)", boxShadow: "7px 7px 0 rgba(26,25,23,.12)" }}>
+            <div style={{ background: "var(--ink)", color: "var(--paper)", padding: "9px 16px", fontFamily: COND, fontWeight: 800, fontSize: 17, letterSpacing: ".04em" }}>
+              WHAT YOU&apos;D TYPE IN
+            </div>
+            <div style={{ padding: "16px 18px" }}>
+              <p style={{ margin: "0 0 10px", fontSize: 15, lineHeight: 1.6, fontStyle: "italic", color: "rgba(26,25,23,.8)" }}>
+                &ldquo;{page.exampleJob}&rdquo;
+              </p>
+              <p style={{ margin: 0, fontFamily: MONO, fontSize: 11, letterSpacing: ".04em", color: "rgba(26,25,23,.55)" }}>
+                WE TURN THAT INTO THE FULL DOCUMENT — STEPS, HAZARDS, CONTROLS, RISK RATINGS, PPE, EMERGENCY PLAN AND TOOLBOX TALK.
+              </p>
+            </div>
+          </section>
 
           {/* What you get */}
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              What&apos;s Included in Your {page.trade} SWMS
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {[
-                "Scope of work description",
-                "HRCW activity identification",
-                "Step-by-step work procedure",
-                "Hazard identification per step",
-                "5Ã—5 risk matrix (initial & residual)",
-                "Hierarchy of controls",
-                "PPE requirements with AS/NZS standards",
-                "Emergency procedures",
-                "Toolbox talk pre-start briefing",
-                "State-specific legislation references",
-                "Signature blocks for workers",
-                "Your business logo and branding",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 text-sm text-muted"
-                >
-                  <span className="text-success">&#10003;</span>
+          <section>
+            <h2 style={{ ...h2Style, marginBottom: 16 }}>What lands in your {page.trade.toLowerCase()} SWMS.</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,300px),1fr))", gap: "8px 20px" }}>
+              {INCLUDED.map((item) => (
+                <div key={item} style={{ display: "flex", gap: 9, alignItems: "baseline", fontSize: 14.5, color: "rgba(26,25,23,.82)" }}>
+                  <span style={{ color: "#3F9C55", fontWeight: 700 }}>✓</span>
                   {item}
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* CTA */}
-      <section className="py-12 px-4 bg-surface">
-        <div className="max-w-xl mx-auto text-center space-y-4">
-          <h2 className="text-2xl font-bold text-primary">
-            Generate Your {page.trade} SWMS Now
-          </h2>
-          <p className="text-muted">
-            Describe your job in plain English. We do the rest in 60 seconds.
-          </p>
-          <Link
-            href="/job"
-            className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg"
-          >
-            {page.cta} — $7.99
-          </Link>
+          {page.faq && <FaqBlock faq={page.faq} />}
+          <RelatedLinks currentSlug={page.slug} />
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-primary text-white/60 py-8 px-4 mt-auto">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <span>&copy; {new Date().getFullYear()} SWMS Sorted.</span>
-          <div className="flex gap-6">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link
-              href="/job"
-              className="hover:text-white transition-colors"
-            >
-              Create SWMS
-            </Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+      <CtaBand
+        heading={`Your ${page.trade.toLowerCase()} SWMS, sorted.`}
+        sub="Describe the job like you'd tell your apprentice. Review every step. Pay when it reads right."
+        cta={page.cta}
+      />
+    </SeoShell>
   );
 }

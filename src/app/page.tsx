@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { SEO_STATE_PAGES, SEO_TRADE_PAGES } from "@/lib/constants/seo-pages";
 
 /* ── Design tokens (see globals.css :root for CSS vars) ── */
 const MONO = "'IBM Plex Mono', monospace";
@@ -648,6 +649,25 @@ export default function Home() {
               <Link href="/terms" className="sw-link-paper">TERMS</Link>
               <Link href="/refunds" className="sw-link-paper">REFUNDS</Link>
               <a href="mailto:support@swmssorted.com.au" className="sw-link-paper">CONTACT</a>
+            </div>
+          </div>
+          {/* SEO page links — internal linking for every trade + state page */}
+          <div style={{ borderTop: "1px solid rgba(244,241,233,.25)", paddingTop: 24, marginBottom: 26 }}>
+            <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".14em", color: "rgba(244,241,233,.5)", marginBottom: 10 }}>SWMS BY TRADE</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 18px", marginBottom: 20 }}>
+              {SEO_TRADE_PAGES.map((p) => (
+                <Link key={p.slug} href={`/${p.slug}`} className="sw-link-paper" style={{ fontFamily: MONO, fontSize: 11, letterSpacing: ".05em" }}>
+                  {p.trade.toUpperCase()}
+                </Link>
+              ))}
+            </div>
+            <div style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".14em", color: "rgba(244,241,233,.5)", marginBottom: 10 }}>SWMS BY STATE</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 18px" }}>
+              {SEO_STATE_PAGES.map((p) => (
+                <Link key={p.slug} href={`/${p.slug}`} className="sw-link-paper" style={{ fontFamily: MONO, fontSize: 11, letterSpacing: ".05em" }}>
+                  {p.state}
+                </Link>
+              ))}
             </div>
           </div>
           <div style={{ borderTop: "1px solid rgba(244,241,233,.25)", paddingTop: 22, display: "flex", justifyContent: "space-between", gap: 24, flexWrap: "wrap", fontFamily: MONO, fontSize: 11, letterSpacing: ".05em", color: "rgba(244,241,233,.55)" }}>

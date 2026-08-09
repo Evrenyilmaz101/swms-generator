@@ -1,160 +1,73 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { SeoStatePage } from "@/lib/constants/seo-pages";
+import { SeoShell, CtaBand, FaqBlock, RelatedLinks, MONO, COND, h2Style } from "./seo-shell";
 
 export function SeoStatePageContent({ page }: { page: SeoStatePage }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Nav */}
-      <header className="bg-primary text-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            <span className="text-accent">SWMS</span> Generator
-          </Link>
-          <Link
-            href="/job"
-            className="bg-accent text-primary font-bold px-5 py-2 rounded-xl hover:bg-accent-dark transition-colors text-sm"
-          >
-            Create SWMS
-          </Link>
-        </div>
-      </header>
-
+    <SeoShell crumb={`SWMS Template ${page.state}`}>
       {/* Hero */}
-      <section className="bg-primary text-white pb-16 pt-12 px-4">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <div className="inline-block bg-accent/20 text-accent text-sm font-semibold px-4 py-1.5 rounded-full">
-            {page.stateName} &bull; {page.primaryAct}
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold">{page.h1}</h1>
-          <p className="text-lg text-white/70">{page.intro}</p>
-          <Link
-            href="/job"
-            className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg mt-4"
-          >
-            {page.cta} — $7.99
+      <section style={{ maxWidth: 880, margin: "0 auto", padding: "34px 24px 44px", boxSizing: "border-box" }}>
+        <div style={{ display: "inline-block", border: "1px solid var(--ink)", background: "var(--swa)", padding: "5px 12px", fontFamily: MONO, fontSize: 10.5, fontWeight: 600, letterSpacing: ".12em", marginBottom: 16 }}>
+          {page.stateName.toUpperCase()} · {page.regulator.toUpperCase()}
+        </div>
+        <h1 style={{ margin: "0 0 14px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(40px,5.5vw,62px)", lineHeight: 0.95, textTransform: "uppercase" }}>
+          {page.h1}
+        </h1>
+        <p style={{ margin: "0 0 24px", fontSize: 16.5, lineHeight: 1.6, color: "rgba(26,25,23,.75)", maxWidth: 640 }}>{page.intro}</p>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+          <Link href="/job" className="sw-btn" style={{ display: "inline-block", padding: "14px 28px", fontSize: 19, textDecoration: "none" }}>
+            {page.cta} — $7.99 →
           </Link>
+          <a href="/sample-swms.pdf" target="_blank" rel="noopener noreferrer" className="sw-ghost" style={{ display: "inline-block", padding: "13px 22px", fontSize: 16, textDecoration: "none" }}>
+            READ A FULL SAMPLE ↗
+          </a>
+        </div>
+        <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 10.5, letterSpacing: ".06em", color: "rgba(26,25,23,.55)" }}>
+          ✓ 60 SECONDS &nbsp; ✓ NO SIGN-UP &nbsp; ✓ EDIT EVERYTHING BEFORE YOU PAY
         </div>
       </section>
 
-      {/* Content */}
-      <section className="py-12 px-4 bg-white">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              Why Do You Need a SWMS in {page.stateName}?
-            </h2>
-            <p className="text-muted">{page.whyNeeded}</p>
-          </div>
+      <div style={{ borderTop: "2px solid var(--ink)" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto", padding: "44px 24px 52px", display: "flex", flexDirection: "column", gap: 44, boxSizing: "border-box" }}>
+          {/* Why needed */}
+          <section>
+            <h2 style={{ ...h2Style, marginBottom: 12 }}>Why you need one in {page.stateName}.</h2>
+            <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.65, color: "rgba(26,25,23,.78)", maxWidth: 680 }}>{page.whyNeeded}</p>
+          </section>
 
-          <div className="bg-error/5 border border-error/20 rounded-xl p-5">
-            <h3 className="font-bold text-error mb-2">
-              Fines for Non-Compliance
-            </h3>
-            <p className="text-sm text-muted">{page.fines}</p>
-          </div>
+          {/* Fines */}
+          <section style={{ border: "2px solid var(--sorange)", background: "var(--card)" }}>
+            <div style={{ background: "var(--sorange)", color: "var(--paper)", padding: "8px 16px", fontFamily: COND, fontWeight: 800, fontSize: 17, letterSpacing: ".04em" }}>
+              ⚠ NON-COMPLIANCE COSTS
+            </div>
+            <p style={{ margin: 0, padding: "14px 18px", fontSize: 14.5, lineHeight: 1.6, color: "rgba(26,25,23,.8)" }}>{page.fines}</p>
+          </section>
 
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              {page.stateName} Legislation Referenced
-            </h2>
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2 text-sm text-muted">
-                <span className="text-accent font-bold mt-0.5">&#10003;</span>
-                <span>
-                  <strong>Primary Act:</strong> {page.primaryAct}
-                </span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted">
-                <span className="text-accent font-bold mt-0.5">&#10003;</span>
-                <span>
-                  <strong>Regulations:</strong> {page.regulations}
-                </span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted">
-                <span className="text-accent font-bold mt-0.5">&#10003;</span>
-                <span>
-                  <strong>Regulator:</strong> {page.regulator}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          {/* How it works */}
-          <div>
-            <h2 className="text-2xl font-bold text-primary mb-3">
-              How It Works
-            </h2>
-            <div className="grid gap-4">
-              {[
-                {
-                  n: "1",
-                  t: "Enter your business details",
-                  d: `Select ${page.state} as your state — the correct legislation is referenced automatically.`,
-                },
-                {
-                  n: "2",
-                  t: "Describe the job",
-                  d: "Type it or use voice input. Include the work, location, and any specific hazards.",
-                },
-                {
-                  n: "3",
-                  t: "We generate your SWMS",
-                  d: `Complete SWMS with ${page.stateName}-specific legislation, risk matrix, PPE, and toolbox talk.`,
-                },
-              ].map((step) => (
-                <div
-                  key={step.n}
-                  className="flex gap-4 items-start bg-surface rounded-xl p-4"
-                >
-                  <span className="bg-accent text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
-                    {step.n}
-                  </span>
-                  <div>
-                    <p className="font-bold text-primary">{step.t}</p>
-                    <p className="text-sm text-muted">{step.d}</p>
-                  </div>
+          {/* Legislation */}
+          <section>
+            <h2 style={{ ...h2Style, marginBottom: 14 }}>{page.state} legislation it references.</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {[page.primaryAct, page.regulations, `Regulator: ${page.regulator}`].map((item) => (
+                <div key={item} style={{ border: "1px solid var(--ink)", background: "var(--card)", padding: "10px 14px", fontFamily: MONO, fontSize: 12.5, fontWeight: 500, letterSpacing: ".02em" }}>
+                  § {item}
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
+            <p style={{ margin: "12px 0 0", fontFamily: MONO, fontSize: 11, letterSpacing: ".04em", color: "rgba(26,25,23,.55)" }}>
+              EVERY DOCUMENT IS BUILT FOR YOUR STATE — PICK {page.state} IN THE BUILDER AND THE RIGHT ACTS, REGULATIONS AND CODES COME WITH IT.
+            </p>
+          </section>
 
-      {/* CTA */}
-      <section className="py-12 px-4 bg-surface">
-        <div className="max-w-xl mx-auto text-center space-y-4">
-          <h2 className="text-2xl font-bold text-primary">
-            Ready to Generate Your {page.state} SWMS?
-          </h2>
-          <p className="text-muted">
-            60 seconds. No signup. {page.stateName} legislation included.
-          </p>
-          <Link
-            href="/job"
-            className="inline-block bg-accent text-primary font-bold px-8 py-4 rounded-xl text-lg hover:bg-accent-dark transition-colors shadow-lg"
-          >
-            {page.cta} — $7.99
-          </Link>
+          {page.faq && <FaqBlock faq={page.faq} />}
+          <RelatedLinks currentSlug={page.slug} />
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-primary text-white/60 py-8 px-4 mt-auto">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <span>&copy; {new Date().getFullYear()} SWMS Sorted.</span>
-          <div className="flex gap-6">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link
-              href="/job"
-              className="hover:text-white transition-colors"
-            >
-              Create SWMS
-            </Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+      <CtaBand
+        heading={`Your ${page.state} SWMS, sorted.`}
+        sub="Describe the job like you'd tell your apprentice. Review every step. Pay when it reads right."
+        cta={page.cta}
+      />
+    </SeoShell>
   );
 }
