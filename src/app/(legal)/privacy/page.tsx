@@ -9,7 +9,7 @@ export default function PrivacyPage() {
   return (
     <>
       <h1>Privacy Policy</h1>
-      <p className="legal-updated">Last updated: 27 July 2026</p>
+      <p className="legal-updated">Last updated: 9 August 2026</p>
 
       <p>
         This policy explains how SWMS Sorted (&quot;we&quot;, &quot;us&quot;) collects, uses, and
@@ -66,6 +66,7 @@ export default function PrivacyPage() {
         <li><strong>Vercel</strong> — website hosting and analytics.</li>
         <li><strong>Anthropic</strong> — processing job descriptions and photos to produce document content. This data is not used to train models.</li>
         <li><strong>Resend</strong> — transactional email delivery.</li>
+        <li><strong>Google</strong> — advertising conversion measurement (whether a visit from one of our ads led to a purchase).</li>
       </ul>
       <p>
         Some of these providers store data outside Australia (for example, in the United States
@@ -101,9 +102,13 @@ export default function PrivacyPage() {
 
       <h2>7. Cookies</h2>
       <p>
-        We use only essential browser storage needed for the Service to work (such as keeping
-        your progress through the document builder) and privacy-friendly analytics. We don&apos;t
-        use advertising or cross-site tracking cookies.
+        We use essential browser storage needed for the Service to work (such as keeping your
+        progress through the document builder) and privacy-friendly analytics. We also use
+        Google&apos;s advertising cookies for conversion measurement — they tell us whether a
+        visit from one of our ads led to a purchase, so we know our advertising works. We
+        don&apos;t use them to build profiles or show you ads elsewhere. You can opt out of
+        Google&apos;s personalised advertising at{" "}
+        <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">adssettings.google.com</a>.
       </p>
 
       <h2>8. Changes</h2>

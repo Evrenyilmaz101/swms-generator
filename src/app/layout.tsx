@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
@@ -73,6 +74,13 @@ export default function RootLayout({
         {children}
         <PwaRegister />
         <Analytics />
+        <Script src="https://www.googletagmanager.com/gtag/js?id=AW-18379076001" />
+        <Script id="google-ads-tag">
+          {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18379076001');`}
+        </Script>
       </body>
     </html>
   );
