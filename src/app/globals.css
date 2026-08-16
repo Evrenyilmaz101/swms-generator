@@ -447,3 +447,27 @@ body {
   .sw-ready .swHeroStamp, .sw-ready .swHeroTag { animation: none; }
   .sw-marquee { animation: none; }
 }
+
+/* ─────────── Scroll-driven build sequence ───────────
+   Tall scroller + pinned stage. Scroll distance is deliberately shorter on
+   phones: a pinned section that outstays its welcome reads as a broken page. */
+.swBuild { position: relative; height: 340vh; }
+.swBuildStage {
+  position: sticky; top: 0; height: 100vh;
+  display: flex; align-items: center; overflow: hidden;
+}
+@media (max-width: 760px) { .swBuild { height: 260vh; } }
+
+.sw-caret { animation: swBlink 1s step-end infinite; }
+
+/* Static fallback — no pinning, artifact rests at its finished state. */
+.swBuild.is-static { height: auto; }
+.swBuild.is-static .swBuildStage {
+  position: static; height: auto; padding: 78px 0; overflow: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .swBuild { height: auto; }
+  .swBuild .swBuildStage {
+    position: static; height: auto; padding: 78px 0; overflow: visible;
+  }
+}

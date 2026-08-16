@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SEO_STATE_PAGES, SEO_TRADE_PAGES } from "@/lib/constants/seo-pages";
+import { ScrollBuild } from "@/components/scroll-build";
 
 /* ── Design tokens (see globals.css :root for CSS vars) ── */
 const MONO = "'IBM Plex Mono', monospace";
@@ -157,7 +158,7 @@ export default function Home() {
       style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", fontFamily: "var(--f-body)" }}
     >
       {/* ═══════════ NAV ═══════════ */}
-      <div style={{ position: "sticky", top: 0, zIndex: 60, background: "var(--paper)", borderBottom: "2px solid var(--ink)" }}>
+      <div data-sticky-nav style={{ position: "sticky", top: 0, zIndex: 60, background: "var(--paper)", borderBottom: "2px solid var(--ink)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "10px 32px", minHeight: 46, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "10px 24px" }}>
           <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 11 }}>
             <div style={{ width: 28, height: 28, border: "2px solid var(--ink)", background: STRIPE(6) }} />
@@ -289,6 +290,9 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ═══════════ SCROLL BUILD ═══════════ */}
+      <ScrollBuild />
 
       {/* ═══════════ LIVE DEMO ═══════════ */}
       <div ref={demoRef} style={{ borderBottom: "2px solid var(--ink)", background: "var(--paper)" }}>
