@@ -2,6 +2,7 @@
 // paper/ink design system, server-rendered, no client JS needed
 import Link from "next/link";
 import { SEO_STATE_PAGES, SEO_TRADE_PAGES, type SeoFaq } from "@/lib/constants/seo-pages";
+import { PROMO_FREE, PRICE_SINGLE } from "@/lib/constants/promo";
 
 export const MONO = "'IBM Plex Mono', monospace";
 export const COND = "'Barlow Condensed', sans-serif";
@@ -44,10 +45,10 @@ export function CtaBand({ heading, sub, cta }: { heading: string; sub: string; c
         <h2 style={{ ...h2Style, color: "var(--paper)", marginBottom: 10 }}>{heading}</h2>
         <p style={{ margin: "0 0 24px", fontSize: 15.5, color: "rgba(244,241,233,.75)" }}>{sub}</p>
         <Link href="/job" className="sw-btn" style={{ display: "inline-block", padding: "15px 34px", fontSize: 20, textDecoration: "none" }}>
-          {cta} — $7.99 →
+          {cta} — {PROMO_FREE ? "FREE" : PRICE_SINGLE} →
         </Link>
         <div style={{ marginTop: 14, fontFamily: MONO, fontSize: 11, letterSpacing: ".08em", color: "rgba(244,241,233,.6)" }}>
-          NO SIGN-UP · EDIT EVERY STEP BEFORE YOU PAY · 7-DAY REFUND
+          {PROMO_FREE ? "NO SIGN-UP · NO CARD NEEDED · FREE THIS LAUNCH RUN" : "NO SIGN-UP · EDIT EVERY STEP BEFORE YOU PAY · 7-DAY REFUND"}
         </div>
       </div>
     </div>

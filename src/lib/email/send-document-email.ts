@@ -58,7 +58,9 @@ export async function sendDocumentEmail(params: DocumentEmailParams) {
     <div style="background:#ffffff;padding:32px 24px;border-radius:0 0 12px 12px;">
       <h2 style="margin:0 0 8px;color:#1a2332;font-size:22px;">Your SWMS is sorted.</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px;">
-        Thanks for your purchase of $${(amountPaid / 100).toFixed(2)} AUD.
+        ${amountPaid > 0
+          ? `Thanks for your purchase of $${(amountPaid / 100).toFixed(2)} AUD.`
+          : `This one's on us — thanks for giving it a crack during our launch run.`}
         This is your document's permanent home — bookmark it or keep this email.
       </p>
 
@@ -79,6 +81,21 @@ export async function sendDocumentEmail(params: DocumentEmailParams) {
         </ul>
         <p style="color:#9ca3af;font-size:12px;line-height:1.5;margin:16px 0 0;">
           Need a hand? Reply to this email.
+        </p>
+      </div>
+
+      <!-- Feedback ask. Deliberately unconditional and off-platform: we want
+           honest criticism and a quotable line, never an incentivised review. -->
+      <div style="margin-top:22px;padding:16px 18px;background:#fffbeb;border:1px solid #f3e3a3;border-radius:8px;">
+        <p style="color:#1a2332;font-size:13px;line-height:1.65;margin:0;">
+          <strong>One favour, if you've got two minutes.</strong><br />
+          We're new, and I'd genuinely rather hear what's wrong with it than what's good.
+          Would a builder accept this as-is? What's missing? Just hit reply — a real
+          person reads every one.
+        </p>
+        <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:10px 0 0;">
+          And if you reckon it's worth it, let me know and I'll put your words on the
+          site — first name and trade only, nothing else.
         </p>
       </div>
     </div>

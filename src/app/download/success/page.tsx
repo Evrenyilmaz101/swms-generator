@@ -165,7 +165,9 @@ function SuccessContent() {
       const response = await fetch("/api/download/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(swmsPayload),
+        // session_id proves the order settled — the server refuses the
+        // unwatermarked PDF without it.
+        body: JSON.stringify({ ...swmsPayload, session_id: sessionId }),
       });
       if (!response.ok) throw new Error("Failed to generate PDF");
 
@@ -233,14 +235,18 @@ function SuccessContent() {
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "64px 0", textAlign: "center" }}>
         <div style={{ width: 88, height: 88, margin: "0 auto 28px", border: "2px solid var(--ink)", background: "var(--swa)", boxShadow: "7px 7px 0 var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 700 }}>✓</div>
         <h1 style={{ margin: "0 0 12px", fontFamily: COND, fontWeight: 800, fontSize: "clamp(48px,5.4vw,72px)", lineHeight: 0.95, textTransform: "uppercase" }}>Done. Go build.</h1>
-        <p style={{ margin: "0 0 34px", fontSize: 16.5, color: "rgba(26,25,23,.72)" }}>Payment sorted — your SWMS is ready. Your receipt and your document link are on their way to your inbox, so nothing gets lost.</p>
+        <p style={{ margin: "0 0 34px", fontSize: 16.5, color: "rgba(26,25,23,.72)" }}>
+          {paymentInfo && paymentInfo.amount === 0
+            ? "All sorted — your SWMS is ready, and this one's on us. Your document link is on its way to your inbox, so nothing gets lost."
+            : "Payment sorted — your SWMS is ready. Your receipt and your document link are on their way to your inbox, so nothing gets lost."}
+        </p>
 
         {paymentInfo && (
           <div style={{ border: "2px solid var(--ink)", background: "var(--card)", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 8, marginBottom: 22, fontFamily: MONO, fontSize: 12, textAlign: "left" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "rgba(26,25,23,.55)" }}>PLAN</span><span style={{ fontWeight: 600 }}>{paymentInfo.plan === "single" ? "SINGLE SWMS" : "3-PACK"}</span></div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "rgba(26,25,23,.55)" }}>AMOUNT</span><span style={{ fontWeight: 600 }}>${(paymentInfo.amount / 100).toFixed(2)} AUD</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "rgba(26,25,23,.55)" }}>AMOUNT</span><span style={{ fontWeight: 600 }}>{paymentInfo.amount === 0 ? "FREE — LAUNCH OFFER" : `$${(paymentInfo.amount / 100).toFixed(2)} AUD`}</span></div>
             {paymentInfo.email && (
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}><span style={{ color: "rgba(26,25,23,.55)" }}>RECEIPT TO</span><span style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>{paymentInfo.email.toUpperCase()}</span></div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}><span style={{ color: "rgba(26,25,23,.55)" }}>{paymentInfo.amount === 0 ? "SENT TO" : "RECEIPT TO"}</span><span style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>{paymentInfo.email.toUpperCase()}</span></div>
             )}
             {paymentInfo.plan !== "single" && (
               <div style={{ borderTop: "1px solid rgba(26,25,23,.2)", paddingTop: 8, color: "rgba(26,25,23,.6)", letterSpacing: ".04em" }}>

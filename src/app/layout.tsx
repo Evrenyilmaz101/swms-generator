@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
+import { PROMO_FREE } from "@/lib/constants/promo";
 
 export const metadata: Metadata = {
   title: {
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | SWMS Sorted",
   },
   description:
-    "Stop stuffing around with SWMS templates. Generate compliant Safe Work Method Statements in 60 seconds. No signup, no BS. From $7.99.",
+    `Stop stuffing around with SWMS templates. Generate compliant Safe Work Method Statements in 60 seconds. No signup, no BS. ${PROMO_FREE ? "Free this launch run." : "From $7.99."}`,
   keywords: [
     "SWMS",
     "safe work method statement",

@@ -87,6 +87,27 @@ export async function validateToken(token: string): Promise<TokenResult> {
 }
 
 /**
+ * Does this token belong to a real, unexpired order?
+ *
+ * Deliberately ignores `used`, unlike validateToken: a token is consumed the
+ * first time it generates a document, but the buyer must still be able to
+ * re-download that document afterwards.
+ */
+export async function tokenBelongsToOrder(token: string): Promise<boolean> {
+  if (!token || token.length < 10) return false;
+  const db = getSupabase();
+
+  const { data, error } = await db
+    .from("generation_tokens")
+    .select("token, expires_at")
+    .eq("token", token)
+    .single();
+
+  if (error || !data) return false;
+  return new Date(data.expires_at) >= new Date();
+}
+
+/**
  * Mark a token as used and store the generated document.
  */
 export async function redeemToken(params: {

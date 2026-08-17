@@ -15,6 +15,9 @@ const requestSchema = z.object({
   // through Stripe metadata so the webhook can email the buyer their
   // permanent document link
   sign_code: z.string().min(6).max(16).optional(),
+  // True when the page the buyer clicked was advertising FREE. If the promo
+  // turns out not to apply, we must NOT quietly hand them a bill.
+  expect_free: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    const { plan, swms_session_id, sign_code } = parsed.data;
+    const { plan, swms_session_id, sign_code, expect_free } = parsed.data;
 
     const key = process.env.STRIPE_SECRET_KEY?.trim();
     if (!key) {
@@ -60,29 +63,76 @@ export async function POST(request: NextRequest) {
     console.log("[checkout-v3] siteUrl:", siteUrl, "priceId:", priceId, "keyLen:", key.length);
 
     // Use native fetch — Stripe Node SDK HTTP clients fail on Vercel/Node 24
-    const params = new URLSearchParams();
-    params.set("mode", "payment");
-    params.set("payment_method_types[0]", "card");
-    params.set("line_items[0][price]", priceId);
-    params.set("line_items[0][quantity]", "1");
-    params.set("metadata[plan]", plan);
-    params.set("metadata[swms_session_id]", swms_session_id);
-    if (sign_code) params.set("metadata[sign_code]", sign_code);
-    params.set("success_url", `${siteUrl}/download/success?session_id={CHECKOUT_SESSION_ID}`);
-    params.set("cancel_url", `${siteUrl}/checkout`);
+    const buildParams = (coupon?: string) => {
+      const params = new URLSearchParams();
+      params.set("mode", "payment");
+      params.set("payment_method_types[0]", "card");
+      params.set("line_items[0][price]", priceId);
+      params.set("line_items[0][quantity]", "1");
+      params.set("metadata[plan]", plan);
+      params.set("metadata[swms_session_id]", swms_session_id);
+      if (sign_code) params.set("metadata[sign_code]", sign_code);
+      // Launch promo: a 100%-off Stripe coupon. Stripe itself enforces the
+      // redemption cap and expiry, so the promo can never outrun its limits.
+      if (coupon) params.set("discounts[0][coupon]", coupon);
+      params.set("success_url", `${siteUrl}/download/success?session_id={CHECKOUT_SESSION_ID}`);
+      params.set("cancel_url", `${siteUrl}/checkout`);
+      return params;
+    };
 
-    console.log("[checkout-v3] Calling Stripe API...");
+    const createSession = (params: URLSearchParams) =>
+      fetch("https://api.stripe.com/v1/checkout/sessions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      });
 
-    const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${key}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
-    });
+    const promoCoupon = (process.env.STRIPE_PROMO_COUPON || "").trim();
+    console.log("[checkout-v3] Calling Stripe API...", promoCoupon ? `promo:${promoCoupon}` : "no promo");
 
-    const data = await res.json();
+    let res = await createSession(buildParams(promoCoupon || undefined));
+    let data = await res.json();
+
+    if (!res.ok && promoCoupon) {
+      // Only a coupon problem justifies dropping the discount. A transient
+      // Stripe fault must not silently cost a promo-eligible buyer $7.99.
+      const code = data?.error?.code;
+      const param = data?.error?.param || "";
+      const couponFault =
+        code === "coupon_expired" ||
+        (code === "resource_missing" && String(param).includes("coupon")) ||
+        /coupon/i.test(data?.error?.message || "");
+
+      if (!couponFault) {
+        console.error("[checkout-v3] Stripe error unrelated to coupon:", data?.error?.message);
+        return NextResponse.json(
+          { error: "Failed to create checkout session", detail: data?.error?.message },
+          { status: 500 }
+        );
+      }
+
+      // The offer is genuinely over. If the buyer was shown FREE, stop here —
+      // sending them to a payment page would be a bait-and-switch.
+      if (expect_free) {
+        console.warn("[checkout-v3] Promo exhausted while UI advertised free — refusing silent downgrade");
+        return NextResponse.json(
+          {
+            error: "promo_ended",
+            promoEnded: true,
+            message: "The free launch offer just ended.",
+          },
+          { status: 409 }
+        );
+      }
+
+      console.warn("[checkout-v3] Promo coupon rejected, retrying at full price:", data?.error?.message);
+      res = await createSession(buildParams());
+      data = await res.json();
+    }
+
     console.log("[checkout-v3] Stripe response status:", res.status);
 
     if (!res.ok) {

@@ -59,56 +59,8 @@ export async function GET(
   }
 }
 
-/**
- * POST /api/download/[token] — Direct download with document data (used by success page)
- * Also supports pre-payment preview flow.
- */
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-
-    // Validate required fields
-    if (!body.swms_data || !body.business_name || !body.state) {
-      return NextResponse.json(
-        { error: "Missing required document data" },
-        { status: 400 }
-      );
-    }
-
-    const doc: SwmsDocument = {
-      id: body.id || crypto.randomUUID(),
-      business_name: body.business_name,
-      abn: body.abn || "",
-      contact_name: body.contact_name || "",
-      phone: body.phone || "",
-      state: body.state,
-      logo_base64: body.logo_base64 || "",
-      job_description: body.job_description || "",
-      site_address: body.site_address || "",
-      principal_contractor: body.principal_contractor || "",
-      job_reference: body.job_reference || "",
-      swms_data: body.swms_data,
-      compliance_score: body.compliance_score || 0,
-      document_reference: body.document_reference || `SWMS-${Date.now()}`,
-      revision_number: body.revision_number || 1,
-      created_at: body.created_at || new Date().toLocaleDateString("en-AU"),
-    };
-
-    const pdfBuffer = await renderSwmsPdf(doc);
-
-    return new NextResponse(new Uint8Array(pdfBuffer), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="SWMS-${doc.business_name.replace(/[^a-zA-Z0-9]/g, "_")}-${doc.document_reference}.pdf"`,
-        "Content-Length": pdfBuffer.length.toString(),
-      },
-    });
-  } catch (error) {
-    console.error("PDF generation error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate PDF. Please try again." },
-      { status: 500 }
-    );
-  }
-}
+/* The POST handler that used to live here took the document data and rendered
+   the finished PDF while ignoring the [token] segment entirely — an
+   unauthenticated copy of the paid deliverable. Nothing called it. Removed
+   rather than secured; /api/download/preview is the single rendering entry
+   point and it now checks entitlement. */

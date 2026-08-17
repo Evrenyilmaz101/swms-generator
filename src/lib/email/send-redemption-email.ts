@@ -55,7 +55,9 @@ export async function sendRedemptionEmail(params: RedemptionEmailParams) {
     <div style="background:#ffffff;padding:32px 24px;border-radius:0 0 12px 12px;">
       <h2 style="margin:0 0 8px;color:#1a2332;font-size:22px;">Your 3-Pack is ready!</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px;">
-        Thanks for your purchase of $${(amountPaid / 100).toFixed(2)} AUD.
+        ${amountPaid > 0
+          ? `Thanks for your purchase of $${(amountPaid / 100).toFixed(2)} AUD.`
+          : `This one's on us — thanks for giving it a crack during our launch run.`}
         Below are your 3 redemption links. Each one creates a professional SWMS document — use them anytime within 12 months.
       </p>
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { PROMO_FREE, PRICE_SINGLE } from "@/lib/constants/promo";
 
 const MONO = "'IBM Plex Mono', monospace";
 const COND = "'Barlow Condensed', sans-serif";
@@ -348,10 +349,10 @@ export function ScrollBuild() {
 
           <div ref={ctaRef} style={{ marginTop: 22, textAlign: "center" }}>
             <Link href="/job" className="sw-btn" style={{ padding: "14px 28px", fontSize: 20 }}>
-              BUILD YOURS — $7.99 →
+              {PROMO_FREE ? "BUILD YOURS — FREE →" : `BUILD YOURS — ${PRICE_SINGLE} →`}
             </Link>
             <div style={{ marginTop: 10, fontFamily: MONO, fontSize: 10.5, letterSpacing: ".08em", color: "rgba(26,25,23,.55)" }}>
-              FREE TO GENERATE · PAY ONLY WHEN YOU DOWNLOAD
+              {PROMO_FREE ? "LAUNCH OFFER · NO CARD NEEDED" : "FREE TO GENERATE · PAY ONLY WHEN YOU DOWNLOAD"}
             </div>
           </div>
         </div>

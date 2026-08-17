@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { renderSwmsPdf } from "@/lib/pdf/render-pdf";
+import { isEntitledToDownload } from "@/lib/utils/entitlement";
+import { rateLimit, getClientIp } from "@/lib/utils/rate-limit";
 import type { SwmsDocument } from "@/types/swms";
 
-// Preview/MVP download endpoint — generates PDF directly from POST body
-// Supports ?watermark=true for pre-payment preview (inline, not attachment)
-// The [token] route handles paid/authenticated downloads
+// Renders a SWMS PDF from the posted document data.
+//   watermark: true  → open. It's the stamped PREVIEW copy, not the deliverable.
+//   watermark: false → the paid deliverable, so it demands proof of purchase
+//                      (a settled Stripe session id, or a purchase token).
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const limit = rateLimit(`download:${ip}`, {
+      maxRequests: 30,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!limit.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const body = await request.json();
     const watermark = body.watermark === true;
 
@@ -16,6 +28,19 @@ export async function POST(request: NextRequest) {
         { error: "Missing required document data" },
         { status: 400 }
       );
+    }
+
+    if (!watermark) {
+      const entitled = await isEntitledToDownload({
+        sessionId: body.session_id,
+        token: body.token,
+      });
+      if (!entitled) {
+        return NextResponse.json(
+          { error: "This download needs a completed order." },
+          { status: 402 }
+        );
+      }
     }
 
     const doc: SwmsDocument = {

@@ -158,7 +158,8 @@ async function handleCheckoutCompleted(session: StripeSession) {
         await sendRedemptionEmail({
           to: email,
           tokens: tokens.map((t: { token: string }) => t.token),
-          amountPaid: session.amount_total || 1999,
+          // ?? not || — a promo order is genuinely 0, and 0 is falsy
+          amountPaid: session.amount_total ?? 1999,
         });
         console.log(`[webhook] Redemption email sent to ${email}`);
       } catch (emailErr) {
@@ -174,7 +175,8 @@ async function handleCheckoutCompleted(session: StripeSession) {
         await sendDocumentEmail({
           to: email,
           signCode,
-          amountPaid: session.amount_total || 799,
+          // ?? not || — a promo order is genuinely 0, and 0 is falsy
+          amountPaid: session.amount_total ?? 799,
           ownerKey: ownerKeyFor(signCode),
         });
         console.log(`[webhook] Document email sent to ${email}`);

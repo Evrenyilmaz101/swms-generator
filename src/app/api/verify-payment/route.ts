@@ -34,7 +34,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (session.payment_status !== "paid") {
+    // A fully-discounted (promo) session settles as "no_payment_required" —
+    // Stripe never asks for a card, so it is complete without being "paid".
+    const settled =
+      session.payment_status === "paid" ||
+      session.payment_status === "no_payment_required";
+    if (!settled) {
       return NextResponse.json(
         { success: false, error: "Payment not completed" },
         { status: 402 }

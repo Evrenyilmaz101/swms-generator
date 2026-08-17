@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useBuilderStore } from "@/stores/builder-store";
 import { makeDocNo, pdfPayload, whenHydrated } from "@/lib/utils/builder-doc";
+import { PROMO_FREE, PROMO_ENDS, PRICE_SINGLE, PRICE_THREE_PACK } from "@/lib/constants/promo";
 
 const MONO = "'IBM Plex Mono', monospace";
 const COND = "'Barlow Condensed', sans-serif";
@@ -25,6 +26,24 @@ export default function CheckoutPage() {
   const [signOffUrl, setSignOffUrl] = useState<string | null>(null);
   const [signOffCode, setSignOffCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  /* Proof of purchase for downloads. Survives redemptionToken being cleared
+     from the store when the credit is spent — the Done screen's retry button
+     still has to be able to fetch the PDF. */
+  const paidTokenRef = useRef<string | null>(null);
+
+  /* PROMO_FREE is baked in at build time and cannot know the coupon has been
+     exhausted or expired. Ask the server and correct ourselves, so the page
+     never promises free once it isn't. */
+  const [isFree, setIsFree] = useState(PROMO_FREE);
+  useEffect(() => {
+    if (!PROMO_FREE) return;
+    let alive = true;
+    fetch("/api/promo")
+      .then((r) => r.json())
+      .then((d) => { if (alive) setIsFree(d?.free === true); })
+      .catch(() => { if (alive) setIsFree(false); });
+    return () => { alive = false; };
+  }, []);
 
   const hasToken = !!redemptionToken;
 
@@ -112,7 +131,8 @@ export default function CheckoutPage() {
     const res = await fetch("/api/download/preview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildPdfPayload()),
+      // The redemption token is this flow's proof of purchase.
+      body: JSON.stringify({ ...buildPdfPayload(), token: paidTokenRef.current ?? redemptionToken }),
     });
     if (!res.ok) throw new Error("PDF generation failed");
     const blob = await res.blob();
@@ -124,7 +144,7 @@ export default function CheckoutPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [buildPdfPayload]);
+  }, [buildPdfPayload, redemptionToken]);
 
   /* ── Token flow: consume a 3-pack credit, then download ── */
   const handleTokenDownload = useCallback(async () => {
@@ -152,6 +172,7 @@ export default function CheckoutPage() {
       // the Done screen regardless of download hiccups. Its DOWNLOAD PDF
       // button retries without touching the token, so a failed first
       // download can't burn the credit.
+      paidTokenRef.current = redemptionToken;
       setRedemptionToken(null);
       setDownloaded(true);
       createSignOff();
@@ -182,10 +203,21 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, swms_session_id: swmsSessionId, sign_code: signCode || undefined }),
+        body: JSON.stringify({
+          plan,
+          swms_session_id: swmsSessionId,
+          sign_code: signCode || undefined,
+          // What the button said. The server refuses to hand back a paid
+          // session when this is true — no bait-and-switch.
+          expect_free: isFree,
+        }),
       });
       const data = await res.json();
-      if (data.url) {
+      if (data.promoEnded) {
+        setIsFree(false);
+        setError(`The free launch offer just ran out. It's ${plan === "three_pack" ? PRICE_THREE_PACK : PRICE_SINGLE} now — hit the button again if you still want it.`);
+        setIsLoading(false);
+      } else if (data.url) {
         window.location.href = data.url;
       } else {
         setError(data.error || "Couldn't open the payment page. Try again in a tick.");
@@ -277,7 +309,10 @@ export default function CheckoutPage() {
                   <div style={{ width: 10, height: 10, borderRadius: "50%", background: plan === "single" ? "var(--ink)" : "transparent" }} />
                 </div>
               </div>
-              <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 46, lineHeight: 1 }}>$7.99</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 46, lineHeight: 1 }}>{isFree ? "FREE" : PRICE_SINGLE}</div>
+                {isFree && <div style={{ fontFamily: COND, fontWeight: 700, fontSize: 21, lineHeight: 1, color: "rgba(26,25,23,.45)", textDecoration: "line-through" }}>{PRICE_SINGLE}</div>}
+              </div>
               <div style={{ fontFamily: MONO, fontSize: 11, color: "rgba(26,25,23,.6)", marginTop: 6 }}>THIS DOCUMENT, ONE-OFF</div>
             </button>
             <button onClick={() => setPlan("three_pack")} style={{ border: "2px solid var(--ink)", background: plan === "three_pack" ? "var(--card)" : "transparent", padding: "22px 24px", cursor: "pointer", position: "relative", boxShadow: plan === "three_pack" ? "6px 6px 0 var(--ink)" : "none", textAlign: "left", fontFamily: "var(--f-body)", color: "var(--ink)" }}>
@@ -288,7 +323,10 @@ export default function CheckoutPage() {
                   <div style={{ width: 10, height: 10, borderRadius: "50%", background: plan === "three_pack" ? "var(--ink)" : "transparent" }} />
                 </div>
               </div>
-              <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 46, lineHeight: 1 }}>$19.99</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 46, lineHeight: 1 }}>{isFree ? "FREE" : PRICE_THREE_PACK}</div>
+                {isFree && <div style={{ fontFamily: COND, fontWeight: 700, fontSize: 21, lineHeight: 1, color: "rgba(26,25,23,.45)", textDecoration: "line-through" }}>{PRICE_THREE_PACK}</div>}
+              </div>
               <div style={{ fontFamily: MONO, fontSize: 11, color: "rgba(26,25,23,.6)", marginTop: 6 }}>THIS ONE + 2 TOKENS, NEVER EXPIRE</div>
             </button>
           </div>
@@ -296,10 +334,16 @@ export default function CheckoutPage() {
           {/* ── Pay ── */}
           <div style={{ border: "2px solid var(--ink)", background: "var(--card)", boxShadow: "8px 8px 0 rgba(26,25,23,.12)", padding: 28, marginBottom: 30 }}>
             <button onClick={handleCheckout} disabled={isLoading} className="sw-btn" style={{ width: "100%", padding: 17, fontSize: 21 }}>
-              {isLoading ? "OPENING SECURE CHECKOUT…" : `PAY ${plan === "three_pack" ? "$19.99" : "$7.99"} — GET MY SWMS`}
+              {isLoading
+                ? "OPENING SECURE CHECKOUT…"
+                : isFree
+                  ? "GET MY SWMS — FREE →"
+                  : `PAY ${plan === "three_pack" ? PRICE_THREE_PACK : PRICE_SINGLE} — GET MY SWMS`}
             </button>
             <div style={{ textAlign: "center", marginTop: 14, fontFamily: MONO, fontSize: 10.5, letterSpacing: ".08em", color: "rgba(26,25,23,.5)" }}>
-              SECURED BY STRIPE · CARD, APPLE PAY &amp; GOOGLE PAY · FULL REFUND WITHIN 7 DAYS IF IT&apos;S NOT USABLE
+              {isFree
+                ? `LAUNCH OFFER · NO CARD NEEDED · FREE UNTIL ${PROMO_ENDS}`
+                : "SECURED BY STRIPE · CARD, APPLE PAY & GOOGLE PAY · FULL REFUND WITHIN 7 DAYS IF IT'S NOT USABLE"}
             </div>
             {error && <div style={{ fontFamily: MONO, fontSize: 12, color: "var(--sorange)", marginTop: 14, textAlign: "center" }}>{error.toUpperCase()}</div>}
           </div>

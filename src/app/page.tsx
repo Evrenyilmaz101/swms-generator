@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SEO_STATE_PAGES, SEO_TRADE_PAGES } from "@/lib/constants/seo-pages";
 import { ScrollBuild } from "@/components/scroll-build";
+import { PROMO_FREE, PROMO_ENDS, PRICE_SINGLE, PRICE_THREE_PACK } from "@/lib/constants/promo";
 
 /* ── Design tokens (see globals.css :root for CSS vars) ── */
 const MONO = "'IBM Plex Mono', monospace";
@@ -80,6 +81,19 @@ export default function Home() {
   useEffect(() => {
     const raf = requestAnimationFrame(() => setReady(true));
     return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* The build-time flag is only intent — confirm with the server so the page
+     never keeps advertising free after the coupon runs out. */
+  const [isFree, setIsFree] = useState(PROMO_FREE);
+  useEffect(() => {
+    if (!PROMO_FREE) return;
+    let alive = true;
+    fetch("/api/promo")
+      .then((r) => r.json())
+      .then((d) => { if (alive) setIsFree(d?.free === true); })
+      .catch(() => { if (alive) setIsFree(false); });
+    return () => { alive = false; };
   }, []);
 
   /* Scroll progress bar */
@@ -177,6 +191,20 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ═══════════ LAUNCH PROMO BAND ═══════════ */}
+      {isFree && (
+        <div style={{ background: "var(--swa)", borderBottom: "2px solid var(--ink)" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "11px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px 14px", flexWrap: "wrap", textAlign: "center" }}>
+            <span style={{ fontFamily: COND, fontWeight: 800, fontSize: 21, letterSpacing: ".04em", textTransform: "uppercase" }}>
+              Launch offer — your SWMS is free
+            </span>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, letterSpacing: ".08em" }}>
+              NORMALLY {PRICE_SINGLE} · UNTIL {PROMO_ENDS} · NO CARD NEEDED
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* ═══════════ HERO ═══════════ */}
       <div style={{ borderBottom: "2px solid var(--ink)", overflow: "hidden" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "72px 32px 84px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,470px),1fr))", gap: 56, alignItems: "center" }}>
@@ -200,7 +228,10 @@ export default function Home() {
               <a href="#sample" className="sw-ghost" style={{ padding: "17px 30px", fontSize: 21 }}>SEE WHAT YOU GET</a>
             </div>
             <div className="swHeroRise" style={{ display: "flex", flexWrap: "wrap", gap: 22, fontFamily: MONO, fontSize: 12, fontWeight: 500, letterSpacing: ".06em", color: "rgba(26,25,23,.75)", animationDelay: ".36s" }}>
-              <span>✓ NO SIGN-UP</span><span>✓ PAY WHEN IT&apos;S READY</span><span>✓ FROM $7.99</span>
+              <span>✓ NO SIGN-UP</span>
+              {isFree
+                ? <><span>✓ NO CARD NEEDED</span><span>✓ FREE UNTIL {PROMO_ENDS}</span></>
+                : <><span>✓ PAY WHEN IT&apos;S READY</span><span>✓ FROM {PRICE_SINGLE}</span></>}
             </div>
           </div>
 
@@ -541,18 +572,31 @@ export default function Home() {
       <div id="pricing" style={{ borderBottom: "2px solid var(--ink)", background: "var(--paper2)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "92px 32px 96px" }}>
           <div data-rv="1" style={{ textAlign: "center", marginBottom: 52 }}>
-            <div style={eyebrow}>PRICING — PAY PER DOCUMENT</div>
+            <div style={eyebrow}>{isFree ? "PRICING — FREE DURING LAUNCH" : "PRICING — PAY PER DOCUMENT"}</div>
             <h2 style={h2Style}>Cheaper than a slab.</h2>
-            <p style={{ margin: "14px 0 0", fontSize: 16, color: "rgba(26,25,23,.7)" }}>No account. No subscription. Pay when your SWMS is ready.</p>
+            <p style={{ margin: "14px 0 0", fontSize: 16, color: "rgba(26,25,23,.7)" }}>
+              {isFree
+                ? `No account. No subscription. No card — free until ${PROMO_ENDS}.`
+                : "No account. No subscription. Pay when your SWMS is ready."}
+            </p>
           </div>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "stretch", gap: 32, flexWrap: "wrap" }}>
             {/* Single */}
             <div data-rv="1" style={{ width: 380, background: "var(--paper)", border: "2px solid var(--ink)", boxShadow: "8px 8px 0 rgba(26,25,23,.18)", display: "flex", flexDirection: "column" }}>
               <div style={{ padding: "28px 30px 0" }}>
                 <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".14em", marginBottom: 16 }}>SINGLE SWMS</div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                  <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>$7.99</div>
-                  <div style={{ fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.6)" }}>ONE-OFF</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                  {isFree ? (
+                    <>
+                      <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>FREE</div>
+                      <div style={{ fontFamily: COND, fontWeight: 700, fontSize: 30, lineHeight: 1, color: "rgba(26,25,23,.45)", textDecoration: "line-through" }}>{PRICE_SINGLE}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>{PRICE_SINGLE}</div>
+                      <div style={{ fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.6)" }}>ONE-OFF</div>
+                    </>
+                  )}
                 </div>
                 <p style={{ margin: "10px 0 22px", fontSize: 14.5, color: "rgba(26,25,23,.7)" }}>For one-off jobs, or giving it a crack.</p>
               </div>
@@ -569,18 +613,27 @@ export default function Home() {
             <div data-rv="1" data-rvd="140" style={{ width: 380, background: "var(--paper)", border: "2px solid var(--ink)", boxShadow: "8px 8px 0 var(--ink)", display: "flex", flexDirection: "column", position: "relative" }}>
               <div style={{ background: "var(--swa)", borderBottom: "2px solid var(--ink)", padding: "9px 30px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, letterSpacing: ".14em" }}>BEST VALUE</div>
-                <div style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, letterSpacing: ".1em" }}>SAVE $3.98</div>
+                <div style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, letterSpacing: ".1em" }}>{isFree ? "3 DOCUMENTS" : "SAVE $3.98"}</div>
               </div>
               <div style={{ padding: "24px 30px 0" }}>
                 <div style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, letterSpacing: ".14em", marginBottom: 16 }}>3-PACK</div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                  <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>$19.99</div>
-                  <div style={{ fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.6)" }}>3 SWMS</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                  {isFree ? (
+                    <>
+                      <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>FREE</div>
+                      <div style={{ fontFamily: COND, fontWeight: 700, fontSize: 30, lineHeight: 1, color: "rgba(26,25,23,.45)", textDecoration: "line-through" }}>{PRICE_THREE_PACK}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 74, lineHeight: 1 }}>{PRICE_THREE_PACK}</div>
+                      <div style={{ fontFamily: MONO, fontSize: 12, color: "rgba(26,25,23,.6)" }}>3 SWMS</div>
+                    </>
+                  )}
                 </div>
                 <p style={{ margin: "10px 0 22px", fontSize: 14.5, color: "rgba(26,25,23,.7)" }}>For crews juggling more than one site.</p>
               </div>
               <div style={{ borderTop: "2px solid var(--ink)", padding: "22px 30px", display: "flex", flexDirection: "column", gap: 11, fontSize: 15, flex: 1 }}>
-                {["Everything in Single", "Tokens never expire — use anytime", "$6.66 per SWMS"].map((f) => (
+                {["Everything in Single", "Tokens never expire — use anytime", isFree ? "Three documents, nothing to pay" : "$6.66 per SWMS"].map((f) => (
                   <div key={f} style={{ display: "flex", gap: 10 }}><span style={{ color: "#3F9C55", fontWeight: 700 }}>✓</span>{f}</div>
                 ))}
               </div>
@@ -628,13 +681,15 @@ export default function Home() {
             Right. Let&apos;s knock it over.
           </h2>
           <p data-rv="1" data-rvd="80" style={{ margin: "0 0 36px", fontSize: 17, color: "rgba(26,25,23,.75)" }}>
-            Describe the job now — you don&apos;t pay until the SWMS is sitting there ready.
+            {isFree
+              ? "Describe the job now — it's free this launch run, and there's no card to enter."
+              : "Describe the job now — you don't pay until the SWMS is sitting there ready."}
           </p>
           <Link data-rv="1" data-rvd="160" href="/job" className="sw-btn-ink" style={{ padding: "20px 40px", fontSize: 24 }}>
             BUILD YOUR SWMS NOW <span style={{ fontFamily: MONO, fontSize: 18 }}>→</span>
           </Link>
           <div style={{ marginTop: 22, fontFamily: MONO, fontSize: 12, letterSpacing: ".08em", color: "rgba(26,25,23,.65)" }}>
-            NO ACCOUNT NEEDED · PAY WHEN YOU&apos;RE HAPPY
+            {isFree ? "NO ACCOUNT NEEDED · NO CARD NEEDED" : "NO ACCOUNT NEEDED · PAY WHEN YOU'RE HAPPY"}
           </div>
         </div>
         <div style={{ height: 12, background: "repeating-linear-gradient(-45deg, #1A1917 0 10px, transparent 10px 20px)" }} />
