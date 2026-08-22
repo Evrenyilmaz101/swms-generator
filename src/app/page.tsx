@@ -173,18 +173,18 @@ export default function Home() {
     >
       {/* ═══════════ NAV ═══════════ */}
       <div data-sticky-nav style={{ position: "sticky", top: 0, zIndex: 60, background: "var(--paper)", borderBottom: "2px solid var(--ink)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "10px 32px", minHeight: 46, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "10px 24px" }}>
+        <div className="swNavBar" style={{ maxWidth: 1280, margin: "0 auto", padding: "10px 32px", minHeight: 46, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "10px 24px" }}>
           <Link href="/" className="sw-link" style={{ display: "flex", alignItems: "center", gap: 11 }}>
             <div style={{ width: 28, height: 28, border: "2px solid var(--ink)", background: STRIPE(6) }} />
             <div style={{ fontFamily: COND, fontWeight: 800, fontSize: 23, letterSpacing: ".05em", color: "var(--ink)" }}>SWMS SORTED</div>
           </Link>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px 28px", fontFamily: MONO, fontSize: 12, fontWeight: 500, letterSpacing: ".08em" }}>
+          <div className="swNavLinks" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px 28px", fontFamily: MONO, fontSize: 12, fontWeight: 500, letterSpacing: ".08em" }}>
             <a href="#how" className="sw-link">HOW IT WORKS</a>
             <a href="#sample" className="sw-link">WHAT YOU GET</a>
             <a href="#pricing" className="sw-link">PRICING</a>
             <a href="#faq" className="sw-link">FAQ</a>
           </div>
-          <Link href="/job" className="sw-btn sw-btn-sm" style={{ padding: "10px 20px", fontSize: 17 }}>BUILD YOUR SWMS</Link>
+          <Link href="/job" className="sw-btn sw-btn-sm swNavCta" style={{ padding: "10px 20px", fontSize: 17 }}>BUILD YOUR SWMS</Link>
         </div>
         <div style={{ height: 4, background: "rgba(26,25,23,.08)" }}>
           <div ref={progressRef} style={{ height: "100%", width: "0%", background: STRIPE(12) }} />

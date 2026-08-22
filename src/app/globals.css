@@ -471,3 +471,14 @@ body {
     position: static; height: auto; padding: 78px 0; overflow: visible;
   }
 }
+
+/* ─────────── Mobile nav ───────────
+   The full desktop nav wrapped onto three rows on a phone — 178px, roughly a
+   quarter of the screen, pushing the headline and hero CTA below the fold.
+   The links are in-page anchors, so on phones we drop them and keep the one
+   thing that matters: the logo and the button. */
+@media (max-width: 760px) {
+  .swNavLinks { display: none !important; }
+  .swNavBar { padding: 8px 16px !important; gap: 10px !important; flex-wrap: nowrap !important; }
+  .swNavCta { padding: 9px 15px !important; font-size: 15px !important; white-space: nowrap; }
+}
