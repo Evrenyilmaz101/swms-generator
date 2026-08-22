@@ -482,3 +482,9 @@ body {
   .swNavBar { padding: 8px 16px !important; gap: 10px !important; flex-wrap: nowrap !important; }
   .swNavCta { padding: 9px 15px !important; font-size: 15px !important; white-space: nowrap; }
 }
+
+/* Phones: reclaim hero whitespace so the headline AND its button share the
+   first screen. Desktop keeps its generous spacing. */
+@media (max-width: 760px) {
+  .swHero { padding: 24px 20px 40px !important; gap: 28px !important; }
+}

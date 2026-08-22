@@ -207,7 +207,7 @@ export default function Home() {
 
       {/* ═══════════ HERO ═══════════ */}
       <div style={{ borderBottom: "2px solid var(--ink)", overflow: "hidden" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "72px 32px 84px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,470px),1fr))", gap: 56, alignItems: "center" }}>
+        <div className="swHero" style={{ maxWidth: 1280, margin: "0 auto", padding: "72px 32px 84px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,470px),1fr))", gap: 56, alignItems: "center" }}>
           <div>
             <div className="swHeroRise" style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 28, animationDelay: ".05s" }}>
               <div style={{ background: "var(--ink)", color: "var(--paper)", padding: "7px 13px", ...monoLabel({ fontSize: 11.5, letterSpacing: ".12em" }) }}>BUILT FOR AUSSIE TRADES</div>
